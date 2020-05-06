@@ -28,7 +28,8 @@ func main()  {
 			log.Printf("进行UDP打洞%s <---> %s 连接\n", peers[0].String(), peers[1].String())
 			lister.WriteToUDP([]byte(peers[1].String()), &peers[0])
 			lister.WriteToUDP([]byte(peers[0].String()), &peers[1])
-			time.Sleep(time.Second * 8)
+			log.Println("服务器退出Ing...")
+			time.Sleep(time.Second * 800)
 			log.Println("服务器退出")
 			return
 		}
