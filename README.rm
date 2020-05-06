@@ -3,10 +3,8 @@
 ## 环境搭建
 spew 用于查看结构体
 mux 用于提供网络路由
-godotenv 获取ENV环境数据
 
---- 
+---
 
 go get github.com/davecgh/go-spew/spew
 go get github.com/gorilla/mux
-go get github.com/joho/godotenv

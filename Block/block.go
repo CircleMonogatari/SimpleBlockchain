@@ -14,6 +14,7 @@ type BlockData struct {
 }
 
 var Blockchain []BlockData
+const targetBits int = 24
 
 func init() {
 	fmt.Println("数据创建")
