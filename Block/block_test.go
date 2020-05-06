@@ -51,3 +51,27 @@ func TestGenerateBlock(t *testing.T) {
 		t.Error("NewBlock PrevBlock Hash Error")
 	}
 }
+
+func TestIsBlockValid(t *testing.T)  {
+	var b BlockData
+	b.Index = 0
+	b.Timestamp = "2020-04-24 22:41:51.5694503 +0800 CST m=+0.005996401"
+
+	b.BPM = 0
+	b.PrevHash = ""
+
+	NewBlock, err := GenerateBlock(&b, 4096)
+	if err != nil {
+		t.Error("create Block Error")
+	}
+
+	if IsBlockValid(NewBlock, b) != true{
+		t.Error("test IsBlockValid Error")
+	}
+
+	NewBlock.Index = 5
+
+	if IsBlockValid(NewBlock, b) != false {
+		t.Error("test IsBlockValid Error")
+	}
+}
