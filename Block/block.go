@@ -6,15 +6,16 @@ import (
 )
 
 type BlockData struct {
-	Index     int
-	Timestamp string
+	Index     int64
+	Timestamp int64
 	BPM       int
-	Hash      string
-	PrevHash  string
+	Hash      []byte
+	PrevHash  []byte
+	Data  []byte
 }
 
 var Blockchain []BlockData
-const targetBits int = 24
+
 
 func init() {
 	fmt.Println("数据创建")

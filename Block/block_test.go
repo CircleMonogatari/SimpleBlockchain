@@ -6,7 +6,7 @@ import (
 )
 
 func TestCalculateHash(t *testing.T) {
-
+	fmt.Println("go test run")
 	var b BlockData
 	b.Index = 0
 	b.Timestamp = "2020-04-24 22:41:51.5694503 +0800 CST m=+0.005996401"
