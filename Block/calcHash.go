@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"log"
+	"math"
 	"math/big"
 )
 
@@ -38,9 +39,10 @@ func IntToHex(num int64) []byte {
 	return buff.Bytes()
 }
 
+//生成
 func (pow *ProofOfWork)PrepareData(nonce int) []byte {
 	data := bytes.Join([][]byte{
-		pow.BlockData.PrevHash,
+		pow.BlockData.PrevBlockHash,
 		pow.BlockData.Data,
 		IntToHex(pow.BlockData.Timestamp),
 		IntToHex(int64(targetBits)),
@@ -50,6 +52,25 @@ func (pow *ProofOfWork)PrepareData(nonce int) []byte {
 	)
 
 	return data
+}
+
+func (pow *ProofOfWork)run() (int, []byte) {
+	var hashInt big.Int
+	var hash [32]byte
+	nonce := 0
+
+	for nonce < math.MaxInt64{
+		data := pow.PrepareData(nonce)
+		hash = sha256.Sum256(data)
+		hashInt.SetBytes(hash[:])
+
+		if hashInt.Cmp(pow.target) == -1 {
+			break;
+		}else {
+			nonce++
+		}
+	}
+	return nonce, hash[:]
 }
 
 
