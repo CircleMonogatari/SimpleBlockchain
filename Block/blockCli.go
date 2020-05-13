@@ -34,3 +34,12 @@ func (cli *CLI) Run() {
 	}
 
 }
+
+func (cli *CLI) addblock(data string) {
+	cli.bc.AddBlock(data)
+	fmt.Println("Success")
+}
+
+func (cli *CLI) printchain() {
+	It := cli.bc.Itrrator()
+}
