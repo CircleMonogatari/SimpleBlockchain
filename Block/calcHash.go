@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
-	"encoding/hex"
 	"log"
 	"math"
 	"math/big"
@@ -54,7 +53,8 @@ func (pow *ProofOfWork)PrepareData(nonce int) []byte {
 	return data
 }
 
-func (pow *ProofOfWork)run() (int, []byte) {
+//计算哈希值
+func (pow *ProofOfWork)Run() (int, []byte) {
 	var hashInt big.Int
 	var hash [32]byte
 	nonce := 0
@@ -63,6 +63,7 @@ func (pow *ProofOfWork)run() (int, []byte) {
 		data := pow.PrepareData(nonce)
 		hash = sha256.Sum256(data)
 		hashInt.SetBytes(hash[:])
+
 
 		if hashInt.Cmp(pow.target) == -1 {
 			break;
@@ -73,32 +74,16 @@ func (pow *ProofOfWork)run() (int, []byte) {
 	return nonce, hash[:]
 }
 
+//工作量证明验证
 
-//计算区块哈希值
-func CalculateHash(block *BlockData) string {
-	record := string(block.Index) + block.Timestamp + string(block.BPM) + block.PrevHash
-	h := sha256.New()
-	h.Write([]byte(record))
-	hashed := h.Sum(nil)
-	return hex.EncodeToString(hashed)
-}
+func(pow *ProofOfWork)Validate() bool{
+	var hashInt big.Int
 
-//判断区块是否有效
-func IsBlockValid(newBlock, oldBlock BlockData) bool {
-	if newBlock.Index != oldBlock.Index+1 {
-		return false
-	}
-	if newBlock.PrevHash != oldBlock.Hash {
-		return false
-	}
-	if CalculateHash(&newBlock) != newBlock.Hash {
-		return false
-	}
-	return true
-}
+	data := pow.PrepareData(pow.BlockData.Nonce)
+	hash := sha256.Sum256(data)
+	hashInt.SetBytes(hash[:])
 
-func ReplaceChain(newBlocks []BlockData) {
-	if len(newBlocks) > len(Blockchain) {
-		Blockchain = newBlocks
-	}
+	isValid := hashInt.Cmp(pow.target) == -1
+
+	return isValid
 }
