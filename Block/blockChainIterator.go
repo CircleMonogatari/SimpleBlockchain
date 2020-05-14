@@ -11,7 +11,7 @@ type BlockChainIterator struct {
 func (bc *BlockChain) Itrrator() *BlockChainIterator {
 	bci := &BlockChainIterator{
 		bc.tip,
-		bc.db,
+		bc.DB,
 	}
 	return bci
 }

@@ -4,10 +4,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 )
 
 type CLI struct {
-	bc *BlockChain
+	BC *BlockChain
 }
 
 func (cli *CLI) Run() {
@@ -29,17 +30,43 @@ func (cli *CLI) Run() {
 			fmt.Println("printchain Parse error")
 		}
 	default:
-
+		cli.printchain()
 		os.Exit(1)
+	}
+
+	if addBlockCmd.Parsed() {
+		if *addBlockData == "" {
+			os.Exit(1)
+		}
+		cli.addblock(*addBlockData)
+	}
+	if printChainCmd.Parsed() {
+		cli.printchain()
 	}
 
 }
 
 func (cli *CLI) addblock(data string) {
-	cli.bc.AddBlock(data)
+	cli.BC.AddBlock(data)
 	fmt.Println("Success")
 }
 
 func (cli *CLI) printchain() {
-	It := cli.bc.Itrrator()
+	It := cli.BC.Itrrator()
+
+	for {
+		block := It.Next()
+
+		fmt.Printf("Prev.Hash: %x\n", block.PrevBlockHash)
+		fmt.Printf("Data: %s\n", block.Data)
+		fmt.Printf("Hash: %x\n", block.Hash)
+		pow := NewProofOfWork(block)
+
+		fmt.Printf("pow: %s\n", strconv.FormatBool(pow.Validate()))
+		fmt.Println()
+
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
+	}
 }

@@ -7,14 +7,15 @@ import (
 
 const dbFile = "blockchain.db"
 const blocksBucket = "blocks"
+const genesisCoinbaseData = "genesis Coinbase Data"
 
 type BlockChain struct {
 	tip []byte   //储存区块链的tip
-	db  *bolt.DB //数据库句柄
+	DB  *bolt.DB //数据库句柄
 }
 
 //获取第一条链
-func NewBlockchain() *BlockChain {
+func NewBlockchain(address string) *BlockChain {
 	var tip []byte
 	db, err := bolt.Open(dbFile, 0600, nil)
 	if err != nil {
@@ -22,13 +23,13 @@ func NewBlockchain() *BlockChain {
 	}
 
 	err = db.Update(func(tx *bolt.Tx) error {
-
 		//获取db句柄
 		b := tx.Bucket([]byte(blocksBucket))
 
 		//如果数据为空, 添加创世块
-		if b != nil {
-			genesis := NewGenesisBlock()
+		if b == nil {
+			cbtx := NewCoinbaseTX(address, genesisCoinbaseData)
+			genesis := NewGenesisBlock(cbtx)
 			b, err := tx.CreateBucket([]byte(blocksBucket))
 			if err != nil {
 				fmt.Println("NewBlockChain read error")
@@ -49,9 +50,9 @@ func NewBlockchain() *BlockChain {
 }
 
 //添加区块
-func (bc *BlockChain) AddBlock(data string) {
+func (bc *BlockChain) AddBlock(Transactions []*Transaction) {
 	var lastHash []byte
-	err := bc.db.View(func(tx *bolt.Tx) error {
+	err := bc.DB.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket)) //获取对应数据库
 		lastHash = b.Get([]byte("1"))
 		return nil
@@ -60,9 +61,9 @@ func (bc *BlockChain) AddBlock(data string) {
 		fmt.Println("get lastblock error ")
 	}
 
-	newBlock := NewBlock(data, lastHash)
+	newBlock := NewBlock(Transactions, lastHash)
 
-	err = bc.db.Update(func(tx *bolt.Tx) error {
+	err = bc.DB.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte(blocksBucket))
 		err := b.Put(newBlock.Hash, newBlock.Serialize())
 		if err != nil {

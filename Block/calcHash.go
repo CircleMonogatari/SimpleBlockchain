@@ -11,13 +11,12 @@ import (
 
 const targetBits = 24
 
-type ProofOfWork struct{
+type ProofOfWork struct {
 	BlockData *BlockData
-	target *big.Int
+	target    *big.Int
 }
 
-
-func NewProofOfWork(b * BlockData) *ProofOfWork {
+func NewProofOfWork(b *BlockData) *ProofOfWork {
 	target := big.NewInt(1)
 
 	// 0x10000000000000000000000000000000000000000000000000000000000
@@ -39,35 +38,34 @@ func IntToHex(num int64) []byte {
 }
 
 //生成
-func (pow *ProofOfWork)PrepareData(nonce int) []byte {
+func (pow *ProofOfWork) PrepareData(nonce int) []byte {
 	data := bytes.Join([][]byte{
 		pow.BlockData.PrevBlockHash,
-		pow.BlockData.Data,
+		pow.BlockData.HashTransactions(),
 		IntToHex(pow.BlockData.Timestamp),
 		IntToHex(int64(targetBits)),
 		IntToHex(int64(nonce)),
 	},
-	[]byte{},
+		[]byte{},
 	)
 
 	return data
 }
 
 //计算哈希值
-func (pow *ProofOfWork)Run() (int, []byte) {
+func (pow *ProofOfWork) Run() (int, []byte) {
 	var hashInt big.Int
 	var hash [32]byte
 	nonce := 0
 
-	for nonce < math.MaxInt64{
+	for nonce < math.MaxInt64 {
 		data := pow.PrepareData(nonce)
 		hash = sha256.Sum256(data)
 		hashInt.SetBytes(hash[:])
 
-
 		if hashInt.Cmp(pow.target) == -1 {
-			break;
-		}else {
+			break
+		} else {
 			nonce++
 		}
 	}
@@ -76,7 +74,7 @@ func (pow *ProofOfWork)Run() (int, []byte) {
 
 //工作量证明验证
 
-func(pow *ProofOfWork)Validate() bool{
+func (pow *ProofOfWork) Validate() bool {
 	var hashInt big.Int
 
 	data := pow.PrepareData(pow.BlockData.Nonce)
