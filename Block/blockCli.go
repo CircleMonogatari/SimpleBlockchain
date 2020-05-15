@@ -47,7 +47,8 @@ func (cli *CLI) Run() {
 }
 
 func (cli *CLI) addblock(data string) {
-	cli.BC.AddBlock(data)
+
+	//cli.BC.AddBlock(data)
 	fmt.Println("Success")
 }
 
@@ -58,7 +59,7 @@ func (cli *CLI) printchain() {
 		block := It.Next()
 
 		fmt.Printf("Prev.Hash: %x\n", block.PrevBlockHash)
-		fmt.Printf("Data: %s\n", block.Data)
+		//fmt.Printf("Data: %s\n", block.Data)
 		fmt.Printf("Hash: %x\n", block.Hash)
 		pow := NewProofOfWork(block)
 

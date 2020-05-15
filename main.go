@@ -7,7 +7,8 @@ import (
 
 func main() {
 	fmt.Println("进入区块链")
-	bc := Block.NewBlockchain()
+
+	bc := Block.NewBlockchain("大萝卜家")
 	defer bc.DB.Close()
 
 	cli := Block.CLI{bc}

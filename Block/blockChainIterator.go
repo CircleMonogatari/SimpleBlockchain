@@ -8,7 +8,7 @@ type BlockChainIterator struct {
 	db          *bolt.DB
 }
 
-func (bc *BlockChain) Itrrator() *BlockChainIterator {
+func (bc *BlockChain) Iterator() *BlockChainIterator {
 	bci := &BlockChainIterator{
 		bc.tip,
 		bc.DB,
