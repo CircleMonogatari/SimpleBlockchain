@@ -81,6 +81,7 @@ func (bc *BlockChain) AddBlock(Transactions []*Transaction) {
 	})
 }
 
+//找到相关的交易
 func (bc *BlockChain) FindUnspentTransactions(address string) []Transaction {
 	var unspentTXs []Transaction
 	spentTXOs := make(map[string][]int)
@@ -89,12 +90,13 @@ func (bc *BlockChain) FindUnspentTransactions(address string) []Transaction {
 	for {
 		block := bci.Next()
 
+		//遍历交易
 		for _, tx := range block.Transactions {
+			//获取交易ID
 			txID := hex.EncodeToString(tx.ID)
-
+			//编译所有输出
 		Outputs:
 			for outIdx, out := range tx.Vout {
-				// Was the output spent?
 				if spentTXOs[txID] != nil {
 					for _, spentOut := range spentTXOs[txID] {
 						if spentOut == outIdx {
@@ -117,11 +119,36 @@ func (bc *BlockChain) FindUnspentTransactions(address string) []Transaction {
 				}
 			}
 		}
-
+		//跳出循环
 		if len(block.PrevBlockHash) == 0 {
 			break
 		}
 	}
 
 	return unspentTXs
+}
+
+//查找交易中 至少amount的 UTXO
+func (bc *BlockChain) FindSpendableOutputs(address string, amount int) (int, map[string][]int) {
+	unspentOutputs := make(map[string][]int) //未交易输出
+	unspentTXs := bc.FindUnspentTransactions(address)
+	accumulated := 0
+
+Work:
+	for _, tx := range unspentTXs {
+		txID := hex.EncodeToString(tx.ID)
+
+		for outIdx, out := range tx.Vout {
+			if out.CanBeUnlockedWith(address) && accumulated < amount {
+				accumulated += out.Value
+				unspentOutputs[txID] = append(unspentOutputs[txID], outIdx)
+
+				if accumulated >= amount {
+					break Work
+				}
+			}
+		}
+	}
+
+	return accumulated, unspentOutputs
 }
