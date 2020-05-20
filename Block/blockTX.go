@@ -9,26 +9,26 @@ import (
 	"log"
 )
 
+//交易体
+type Transaction struct {
+	ID   []byte     //ID
+	Vin  []TXInput  //输入
+	Vout []TXOutput //输出
+}
+
 //交易输入
 type TXInput struct {
-	Txid      []byte //交易ID
+	Txid      []byte //交易ID, 一个交易输入引用了之前一笔交易的一个输出, ID 表明是之前哪笔交易
 	Vout      int    //输出索引
 	ScriptSig string
 }
 
-const subsidy = 1
+const subsidy = 20
 
 //交易输出
 type TXOutput struct {
 	Value        int
 	ScriptPubKey string
-}
-
-//交易体
-type Transaction struct {
-	ID   []byte
-	Vin  []TXInput
-	Vout []TXOutput
 }
 
 //检查交易是否为 coinbase
@@ -70,6 +70,7 @@ func NewUTXOTransaction(from, to string, amount int, bc *BlockChain) *Transactio
 	var inputs []TXInput
 	var outputs []TXOutput
 
+	//找到符合条件的输出
 	acc, validOutputs := bc.FindSpendableOutputs(from, amount)
 	if acc < amount {
 		log.Panic("Error: Not enough funds")
@@ -99,10 +100,12 @@ func NewUTXOTransaction(from, to string, amount int, bc *BlockChain) *Transactio
 	return &tx
 }
 
+//验证输入持有者
 func (in *TXInput) CanUnlockOutputWith(unlockingData string) bool {
 	return in.ScriptSig == unlockingData
 }
 
+//验证输出持有者
 func (out *TXOutput) CanBeUnlockedWith(unlockingData string) bool {
 	return out.ScriptPubKey == unlockingData
 }

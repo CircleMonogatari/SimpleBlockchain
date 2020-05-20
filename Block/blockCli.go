@@ -3,71 +3,176 @@ package Block
 import (
 	"flag"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"log"
 	"os"
 	"strconv"
 )
 
 type CLI struct {
-	BC *BlockChain
 }
 
 func (cli *CLI) Run() {
+	cli.validateArgs()
 
-	addBlockCmd := flag.NewFlagSet("addblock", flag.ExitOnError)
+	getBalanceCmd := flag.NewFlagSet("getbalance", flag.ExitOnError)
+	createBlockchainCmd := flag.NewFlagSet("createblockchain", flag.ExitOnError)
+	sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
 	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
 
-	addBlockData := addBlockCmd.String("data", "", "Block data")
+	getBalanceAddress := getBalanceCmd.String("address", "", "The address to get balance for")
+	createBlockchainAddress := createBlockchainCmd.String("address", "", "The address to send genesis block reward to")
+	sendFrom := sendCmd.String("from", "", "Source wallet address")
+	sendTo := sendCmd.String("to", "", "Destination wallet address")
+	sendAmount := sendCmd.Int("amount", 0, "Amount to send")
 
 	switch os.Args[1] {
-	case "addblock":
-		err := addBlockCmd.Parse(os.Args[2:])
+	case "getbalance":
+		err := getBalanceCmd.Parse(os.Args[2:])
 		if err != nil {
-			fmt.Println("addblock Parse error")
+			log.Panic(err)
+		}
+	case "createblockchain":
+		err := createBlockchainCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
+		}
+	case "send":
+		err := sendCmd.Parse(os.Args[2:])
+		if err != nil {
+			log.Panic(err)
 		}
 	case "printchain":
 		err := printChainCmd.Parse(os.Args[2:])
 		if err != nil {
-			fmt.Println("printchain Parse error")
+			log.Panic(err)
 		}
 	default:
-		cli.printchain()
+		cli.printUsage()
 		os.Exit(1)
 	}
 
-	if addBlockCmd.Parsed() {
-		if *addBlockData == "" {
+	if getBalanceCmd.Parsed() {
+		if *getBalanceAddress == "" {
+			getBalanceCmd.Usage()
 			os.Exit(1)
 		}
-		cli.addblock(*addBlockData)
+		cli.getBalance(*getBalanceAddress)
 	}
+
+	if createBlockchainCmd.Parsed() {
+		if *createBlockchainAddress == "" {
+			createBlockchainCmd.Usage()
+			os.Exit(1)
+		}
+		cli.createBlockchain(*createBlockchainAddress)
+	}
+
 	if printChainCmd.Parsed() {
-		cli.printchain()
+		cli.printChain()
 	}
 
+	if sendCmd.Parsed() {
+		if *sendFrom == "" || *sendTo == "" || *sendAmount <= 0 {
+			sendCmd.Usage()
+			os.Exit(1)
+		}
+
+		cli.send(*sendFrom, *sendTo, *sendAmount)
+	}
 }
 
-func (cli *CLI) addblock(data string) {
-
-	//cli.BC.AddBlock(data)
-	fmt.Println("Success")
+func (cli *CLI) createBlockchain(address string) {
+	bc := NewBlockchain(address)
+	bc.DB.Close()
+	fmt.Println("Done!")
 }
 
-func (cli *CLI) printchain() {
-	It := cli.BC.Itrrator()
+func (cli *CLI) getBalance(address string) {
+	bc := NewBlockchain(address)
+	defer bc.DB.Close()
+
+	balance := 0
+	UTXOs := bc.FindUTXO(address)
+
+	for _, out := range UTXOs {
+		balance += out.Value
+	}
+
+	fmt.Printf("Balance of '%s': %d\n", address, balance)
+}
+
+func (cli *CLI) printUsage() {
+	fmt.Println("Usage:")
+	fmt.Println("  getbalance -address ADDRESS - Get balance of ADDRESS")
+	fmt.Println("  createblockchain -address ADDRESS - Create a blockchain and send genesis block reward to ADDRESS")
+	fmt.Println("  printchain - Print all the blocks of the blockchain")
+	fmt.Println("  send -from FROM -to TO -amount AMOUNT - Send AMOUNT of coins from FROM address to TO")
+}
+
+func (cli *CLI) validateArgs() {
+	if len(os.Args) < 2 {
+		cli.printUsage()
+		os.Exit(1)
+	}
+}
+
+func (cli *CLI) printChain() {
+	bc := NewBlockchain("")
+	defer bc.DB.Close()
+
+	bci := bc.Iterator()
 
 	for {
-		block := It.Next()
+		block := bci.Next()
 
-		fmt.Printf("Prev.Hash: %x\n", block.PrevBlockHash)
-		//fmt.Printf("Data: %s\n", block.Data)
+		fmt.Printf("Prev hash: %x\n", block.PrevBlockHash)
 		fmt.Printf("Hash: %x\n", block.Hash)
 		pow := NewProofOfWork(block)
-
-		fmt.Printf("pow: %s\n", strconv.FormatBool(pow.Validate()))
+		fmt.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
 		fmt.Println()
 
 		if len(block.PrevBlockHash) == 0 {
 			break
 		}
 	}
+}
+
+//send
+func (cli *CLI) send(from, to string, amount int) {
+	bc := NewBlockchain(from)
+	defer bc.DB.Close()
+
+	tx := NewUTXOTransaction(from, to, amount, bc)
+	bc.MineBlock([]*Transaction{tx})
+	fmt.Println("Success!")
+}
+
+func (cli *CLI) Web() {
+	r := gin.Default()
+	r.GET("/show", ShowTX)
+	r.GET("/Init", WebInit)
+
+	r.Run() // listen and serve on 0.0.0.0:8080
+
+	fmt.Println("WEB END")
+}
+
+func WebInit(c *gin.Context) {
+
+}
+
+func ShowTX(c *gin.Context) {
+
+	//Address, err :=  c.Get("address")
+	//if  err != nil {
+	//	Address = ""
+	//}
+	//
+	//
+	//
+	//
+	//c.JSON(200, gin.H{
+	//	"message": "pong",
+	//}
 }

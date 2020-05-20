@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/boltdb/bolt"
+	"log"
 )
 
 const dbFile = "blockchain.db"
@@ -48,6 +49,54 @@ func NewBlockchain(address string) *BlockChain {
 	bc := BlockChain{tip, db}
 
 	return &bc
+}
+
+//查找所有相关交易
+func (bc *BlockChain) FindUTXO(address string) []TXOutput {
+	var UTXOs []TXOutput
+	unspentTransactions := bc.FindUnspentTransactions(address)
+
+	for _, tx := range unspentTransactions {
+		for _, out := range tx.Vout {
+			if out.CanBeUnlockedWith(address) {
+				UTXOs = append(UTXOs, out)
+			}
+		}
+	}
+
+	return UTXOs
+}
+
+func (bc *BlockChain) MineBlock(transactions []*Transaction) {
+	var lastHash []byte
+
+	err := bc.DB.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(blocksBucket))
+		lastHash = b.Get([]byte("1"))
+		return nil
+	})
+	if err != nil {
+		log.Panic(err)
+	}
+
+	newBlock := NewBlock(transactions, lastHash)
+	err = bc.DB.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(blocksBucket))
+		err := b.Put(newBlock.Hash, newBlock.Serialize())
+		if err != nil {
+			log.Panic(err)
+		}
+
+		err = b.Put([]byte("1"), newBlock.Hash)
+		if err != nil {
+			log.Panic(err)
+		}
+
+		bc.tip = newBlock.Hash
+
+		return nil
+	})
+
 }
 
 //添加区块
@@ -151,4 +200,35 @@ Work:
 	}
 
 	return accumulated, unspentOutputs
+}
+
+//交易溯源
+func (bc *BlockChain) Traceability(address string) []Transaction {
+	var Transactions []Transaction
+
+	it := bc.Iterator()
+	for {
+		block := it.Next()
+
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
+	}
+
+	return Transactions
+}
+
+//查询当前余额
+func (bc *BlockChain) balance(address string) []TXOutput {
+	var txoutputs []TXOutput
+	unspentTXs := bc.FindUnspentTransactions(address)
+
+	for _, tx := range unspentTXs {
+		for _, out := range tx.Vout {
+			if out.CanBeUnlockedWith(address) {
+				txoutputs = append(txoutputs, out)
+			}
+		}
+	}
+	return txoutputs
 }

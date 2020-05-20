@@ -4,5 +4,6 @@ go 1.13
 
 require (
 	github.com/boltdb/bolt v1.3.1
+	github.com/gin-gonic/gin v1.6.3
 	golang.org/x/sys v0.0.0-20200511232937-7e40ca221e25 // indirect
 )
