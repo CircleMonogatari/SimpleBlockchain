@@ -51,6 +51,56 @@ func NewBlockchain(address string) *BlockChain {
 	return &bc
 }
 
+//获取当前区块链长度  当做版本
+func (bc *BlockChain) Version() int {
+	num := 0
+	it := bc.Iterator()
+	for {
+		block := it.Next()
+		num++
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
+	}
+	return num
+}
+
+type BlockByte struct {
+	Key   []byte
+	Value []byte
+}
+
+//获取DB中所有的Key和value
+func (bc *BlockChain) GetBlockAll() []*BlockByte {
+	var blocks []*BlockByte
+
+	it := bc.Iterator()
+	for {
+		block := it.Next()
+		value := bc.GetValue(block.Hash)
+
+		blocks = append(blocks, &BlockByte{block.Hash, value})
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
+	}
+
+	return blocks
+}
+
+func (bc *BlockChain) GetValue(key []byte) []byte {
+	var value []byte
+	err := bc.DB.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(blocksBucket))
+		value = b.Get(key)
+		return nil
+	})
+	if err != nil {
+		return nil
+	}
+	return value
+}
+
 //查找所有相关交易
 func (bc *BlockChain) FindUTXO(address string) []TXOutput {
 	var UTXOs []TXOutput
@@ -219,7 +269,7 @@ func (bc *BlockChain) Traceability(address string) []Transaction {
 }
 
 //查询当前余额
-func (bc *BlockChain) balance(address string) []TXOutput {
+func (bc *BlockChain) Balance(address string) []TXOutput {
 	var txoutputs []TXOutput
 	unspentTXs := bc.FindUnspentTransactions(address)
 

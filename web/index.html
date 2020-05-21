@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>茶叶区块链</title>
+
+
+    <script type="text/javascript" src="jquery.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    window.onload = function () {
+        //方法内容
+        var tbody = document.getElementById('tbMain');
+        var addr
+        //获取中心服务器地址
+        $.get("/GetLocalHost", function (data, status) {
+            alert("data:"+ data +"   status:" + status)
+            addr = data
+        })
+
+        tbody.append(addr)
+
+    }
+</script>
+
+<table border="1">
+    <tr>
+        <td>中心服务器</td>
+    </tr>
+    <tbody id="tbMain"></tbody>
+</table>
+
+<p>活跃服务器:</p>>
+
+
+
+</body>
+</html>

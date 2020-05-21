@@ -3,92 +3,114 @@ package Block
 import (
 	"flag"
 	"fmt"
-	"github.com/gin-gonic/gin"
+	"github.com/boltdb/bolt"
 	"log"
 	"os"
 	"strconv"
 )
 
 type CLI struct {
+	Localhost string
+	mode      int
+}
+
+var Cli *CLI
+
+func GetInstance() *CLI {
+	if Cli == nil {
+		Cli = &CLI{}
+	}
+	return Cli
 }
 
 func (cli *CLI) Run() {
 	cli.validateArgs()
 
-	getBalanceCmd := flag.NewFlagSet("getbalance", flag.ExitOnError)
-	createBlockchainCmd := flag.NewFlagSet("createblockchain", flag.ExitOnError)
-	sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
-	printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
-
-	getBalanceAddress := getBalanceCmd.String("address", "", "The address to get balance for")
-	createBlockchainAddress := createBlockchainCmd.String("address", "", "The address to send genesis block reward to")
-	sendFrom := sendCmd.String("from", "", "Source wallet address")
-	sendTo := sendCmd.String("to", "", "Destination wallet address")
-	sendAmount := sendCmd.Int("amount", 0, "Amount to send")
-
-	switch os.Args[1] {
-	case "getbalance":
-		err := getBalanceCmd.Parse(os.Args[2:])
-		if err != nil {
-			log.Panic(err)
-		}
-	case "createblockchain":
-		err := createBlockchainCmd.Parse(os.Args[2:])
-		if err != nil {
-			log.Panic(err)
-		}
-	case "send":
-		err := sendCmd.Parse(os.Args[2:])
-		if err != nil {
-			log.Panic(err)
-		}
-	case "printchain":
-		err := printChainCmd.Parse(os.Args[2:])
-		if err != nil {
-			log.Panic(err)
-		}
-	default:
-		cli.printUsage()
-		os.Exit(1)
+	mode := flag.Int("mode", 0, "服务器类型: 0 中心服务器; 1 功能服务器; 2 处理服务器")
+	if *mode == 0 {
+		log.Printf("服务器类型不能为空")
 	}
 
-	if getBalanceCmd.Parsed() {
-		if *getBalanceAddress == "" {
-			getBalanceCmd.Usage()
-			os.Exit(1)
-		}
-		cli.getBalance(*getBalanceAddress)
-	}
+	cli.mode = *mode
 
-	if createBlockchainCmd.Parsed() {
-		if *createBlockchainAddress == "" {
-			createBlockchainCmd.Usage()
-			os.Exit(1)
-		}
-		cli.createBlockchain(*createBlockchainAddress)
-	}
+	localhost := flag.String("localhost", "", "填入中心服务器IP, 未填写默认为中心服务器")
+	cli.Localhost = *localhost
 
-	if printChainCmd.Parsed() {
-		cli.printChain()
-	}
-
-	if sendCmd.Parsed() {
-		if *sendFrom == "" || *sendTo == "" || *sendAmount <= 0 {
-			sendCmd.Usage()
-			os.Exit(1)
-		}
-
-		cli.send(*sendFrom, *sendTo, *sendAmount)
-	}
+	//getBalanceCmd := flag.NewFlagSet("getbalance", flag.ExitOnError)
+	//createBlockchainCmd := flag.NewFlagSet("createblockchain", flag.ExitOnError)
+	//sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
+	//printChainCmd := flag.NewFlagSet("printchain", flag.ExitOnError)
+	//
+	//getBalanceAddress := getBalanceCmd.String("address", "", "The address to get balance for")
+	//createBlockchainAddress := createBlockchainCmd.String("address", "", "The address to send genesis block reward to")
+	//sendFrom := sendCmd.String("from", "", "Source wallet address")
+	//sendTo := sendCmd.String("to", "", "Destination wallet address")
+	//sendAmount := sendCmd.Int("amount", 0, "Amount to send")
+	//
+	//switch os.Args[1] {
+	//case "getbalance":
+	//	err := getBalanceCmd.Parse(os.Args[2:])
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
+	//case "createblockchain":
+	//	err := createBlockchainCmd.Parse(os.Args[2:])
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
+	//case "send":
+	//	err := sendCmd.Parse(os.Args[2:])
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
+	//case "printchain":
+	//	err := printChainCmd.Parse(os.Args[2:])
+	//	if err != nil {
+	//		log.Panic(err)
+	//	}
+	//default:
+	//	cli.printUsage()
+	//	os.Exit(1)
+	//}
+	//
+	//if getBalanceCmd.Parsed() {
+	//	if *getBalanceAddress == "" {
+	//		getBalanceCmd.Usage()
+	//		os.Exit(1)
+	//	}
+	//	cli.getBalance(*getBalanceAddress)
+	//}
+	//
+	//if createBlockchainCmd.Parsed() {
+	//	if *createBlockchainAddress == "" {
+	//		createBlockchainCmd.Usage()
+	//		os.Exit(1)
+	//	}
+	//	cli.createBlockchain(*createBlockchainAddress)
+	//}
+	//
+	//if printChainCmd.Parsed() {
+	//	cli.printChain()
+	//}
+	//
+	//if sendCmd.Parsed() {
+	//	if *sendFrom == "" || *sendTo == "" || *sendAmount <= 0 {
+	//		sendCmd.Usage()
+	//		os.Exit(1)
+	//	}
+	//
+	//	cli.send(*sendFrom, *sendTo, *sendAmount)
+	//}
 }
 
-func (cli *CLI) createBlockchain(address string) {
+//获取区块链
+func (cli *CLI) RreateBlockchain(address string) {
 	bc := NewBlockchain(address)
 	bc.DB.Close()
 	fmt.Println("Done!")
 }
 
-func (cli *CLI) getBalance(address string) {
+func (cli *CLI) GetBalance(address string) {
 	bc := NewBlockchain(address)
 	defer bc.DB.Close()
 
@@ -139,7 +161,7 @@ func (cli *CLI) printChain() {
 }
 
 //send
-func (cli *CLI) send(from, to string, amount int) {
+func (cli *CLI) Send(from, to string, amount int) {
 	bc := NewBlockchain(from)
 	defer bc.DB.Close()
 
@@ -148,31 +170,33 @@ func (cli *CLI) send(from, to string, amount int) {
 	fmt.Println("Success!")
 }
 
-func (cli *CLI) Web() {
-	r := gin.Default()
-	r.GET("/show", ShowTX)
-	r.GET("/Init", WebInit)
+func (cli *CLI) GetVersion() int {
 
-	r.Run() // listen and serve on 0.0.0.0:8080
+	bc := NewBlockchain("")
+	defer bc.DB.Close()
 
-	fmt.Println("WEB END")
+	return bc.Version()
 }
 
-func WebInit(c *gin.Context) {
+func (cli *CLI) GetLocalHost() string {
+	return cli.Localhost
+}
+
+func (cli *CLI) BlockChain() {
+
+	bc := NewBlockchain("")
+	defer bc.DB.Close()
+
+	err := bc.DB.View(func(tx *bolt.Tx) error {
+
+		return nil
+	})
+	if err != nil {
+		log.Panic("Read BlockChain Error")
+	}
 
 }
 
-func ShowTX(c *gin.Context) {
+func (cli *CLI) SynchronizeBlock() {
 
-	//Address, err :=  c.Get("address")
-	//if  err != nil {
-	//	Address = ""
-	//}
-	//
-	//
-	//
-	//
-	//c.JSON(200, gin.H{
-	//	"message": "pong",
-	//}
 }
