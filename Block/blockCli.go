@@ -4,7 +4,9 @@ import (
 	"flag"
 	"fmt"
 	"github.com/boltdb/bolt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
 )
@@ -198,5 +200,28 @@ func (cli *CLI) BlockChain() {
 }
 
 func (cli *CLI) SynchronizeBlock() {
+	//判断版本
+	var lateversion int
+	version := cli.GetVersion()
 
+	//获取中心服务器版本
+	//lateversion =
+
+	if version != lateversion {
+
+	}
+}
+
+func (cli *CLI) ServerVersion() (int, error) {
+	//获取版本
+	resp, err := http.Get(cli.Localhost + "/version")
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+	defer resp.Body.Close()
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(body))
+
+	return 0, nil
 }

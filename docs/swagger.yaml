@@ -1,0 +1,18 @@
+definitions:
+  gin.H:
+    additionalProperties: true
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /version:
+    get:
+      description: 返回当前区块链长度
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: 区块链版本
+swagger: "2.0"

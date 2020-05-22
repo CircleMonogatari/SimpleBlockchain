@@ -4,29 +4,34 @@
     <meta charset="UTF-8">
     <title>茶叶区块链</title>
 
-
-    <script type="text/javascript" src="jquery.js"></script>
+    <script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+    <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
 </head>
 <body>
 <script type="text/javascript">
-    window.onload = function () {
-        //方法内容
-        var tbody = document.getElementById('tbMain');
-        var addr
-        //获取中心服务器地址
-        $.get("/GetLocalHost", function (data, status) {
-            alert("data:"+ data +"   status:" + status)
-            addr = data
-        })
 
-        tbody.append(addr)
+    new Vue({
+        el: '#app',
+        data () {
+            return {
+                info: null
+            }
+        },
+        mounted () {
+            axios.get('/version')
+                .then(response => (this.info = response))
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    })
 
-    }
+
 </script>
 
 <table border="1">
     <tr>
-        <td>中心服务器</td>
+        <td>中心服务器                              </td>
     </tr>
     <tbody id="tbMain"></tbody>
 </table>
