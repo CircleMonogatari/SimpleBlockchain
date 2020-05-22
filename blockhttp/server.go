@@ -3,6 +3,7 @@ package blockhttp
 import (
 	"fmt"
 	_ "github.com/Circlemono/simpelBlock/docs"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/Circlemono/simpelBlock/Block"
@@ -68,9 +69,27 @@ func ShowTX(c *gin.Context) {
 
 }
 
+func Syncdata() {
+	cli := Block.GetInstance()
+
+	resp, err := http.Get(cli.Localhost + "/version")
+	if err != nil {
+
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+
+	}
+
+	fmt.Println(string(body))
+	//获取版本数据
+}
+
 // @Summary 区块链版本
 // @Description 返回当前区块链长度
-// @Success 200 {objectx} gin.H
+// @Success 200 {object} gin.H
 // @Router /version [get]
 func Version(c *gin.Context) {
 	cli := Block.GetInstance()
@@ -79,20 +98,4 @@ func Version(c *gin.Context) {
 		//返回version数据
 		"version": version,
 	})
-}
-
-func tbdata() {
-	//resp, err := http.Get(cli.Localhost + "/GetVersion")
-	//if err != nil {
-	//
-	//}
-	//defer resp.Body.Close()
-	//
-	//body, err := ioutil.ReadAll(resp.Body)
-	//if err != nil {
-	//
-	//}
-	//
-	//fmt.Println(string(body))
-	////获取版本数据
 }
