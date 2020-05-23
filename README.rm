@@ -24,6 +24,14 @@ go test -v .
 // @Router /test/{id} [get]    //路由信息，一定要写上
 
 
+@Param
+参数，表示需要传递到服务器端的参数，有五列参数，使用空格或者 tab 分割，五个分别表示的含义如下
+1.参数名
+2.参数类型，可以有的值是 formData、query、path、body、header，formData 表示是 post 请求的数据，query 表示带在 url 之后的参数，path 表示请求路径上得参数，例如上面例子里面的 key，body 表示是一个 raw 数据请求，header 表示带在 header 信息中得参数。
+3.参数类型
+4.是否必须
+5.注释
+
 
 ##mod 依赖包相关
 

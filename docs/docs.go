@@ -29,8 +29,7 @@ var doc = `{
             "post": {
                 "description": "用于同步本地区块链数据",
                 "tags": [
-                    "服务器组   //swagger API分类标签",
-                    "同一个tag为一组"
+                    "服务器组"
                 ],
                 "summary": "当前区块链数据",
                 "responses": {
@@ -47,8 +46,7 @@ var doc = `{
             "get": {
                 "description": "返回指定用户的余额信息",
                 "tags": [
-                    "前端   //swagger API分类标签",
-                    "同一个tag为一组"
+                    "前端"
                 ],
                 "summary": "余额",
                 "parameters": [
@@ -63,7 +61,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/gin.H"
+                            "$ref": "#/definitions/blockhttp.Response"
                         }
                     }
                 }
@@ -73,8 +71,7 @@ var doc = `{
             "get": {
                 "description": "返回当前区块链长度",
                 "tags": [
-                    "前端   //swagger API分类标签",
-                    "同一个tag为一组"
+                    "前端"
                 ],
                 "summary": "区块链版本",
                 "responses": {
@@ -91,8 +88,7 @@ var doc = `{
             "get": {
                 "description": "返回当前区块链长度",
                 "tags": [
-                    "前端   //swagger API分类标签",
-                    "同一个tag为一组"
+                    "前端"
                 ],
                 "summary": "区块链版本",
                 "responses": {
@@ -107,6 +103,9 @@ var doc = `{
         }
     },
     "definitions": {
+        "blockhttp.Response": {
+            "type": "object"
+        },
         "gin.H": {
             "type": "object",
             "additionalProperties": true

@@ -74,11 +74,16 @@ func WebInit(c *gin.Context) {
 
 }
 
+type Response struct {
+	status string `json:"status" example:"ok" format:"string"`
+	data   interface{}
+}
+
 // @Summary 余额
 // @Description 返回指定用户的余额信息
 // @Tags 前端
 // @Param address query string false "Ivan"
-// @Success 200 {object} gin.H
+// @Success 200 {object} Response
 // @Router /balance [get]
 func Balance(c *gin.Context) {
 	address := c.DefaultQuery("address", "")
@@ -89,9 +94,9 @@ func Balance(c *gin.Context) {
 	cli := Block.GetInstance()
 	balance := cli.GetBalance(address)
 
-	c.JSON(http.StatusBadRequest, gin.H{
-		"status": "ok",
-		"data":   balance,
+	c.JSON(http.StatusBadRequest, Response{
+		status: "ok",
+		data:   balance,
 	})
 }
 
@@ -105,7 +110,9 @@ func ShowTX(c *gin.Context) {
 	if address == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
 	}
-
+	c.JSON(http.StatusBadRequest, gin.H{
+		"status": "ok",
+	})
 }
 
 func Syncdata() {
@@ -122,14 +129,13 @@ func Syncdata() {
 
 // @Summary 区块链版本
 // @Description 返回当前区块链长度
-// @Tags 前端   //swagger API分类标签, 同一个tag为一组
+// @Tags 前端
 // @Success 200 {object} gin.H
 // @Router /version [get]
 func Version(c *gin.Context) {
 	cli := Block.GetInstance()
 	version := cli.GetVersion()
 	c.JSON(200, gin.H{
-		//返回version数据
 		"version": version,
 	})
 }
