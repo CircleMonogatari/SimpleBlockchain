@@ -3,7 +3,7 @@ package blockhttp
 import (
 	"fmt"
 	_ "github.com/Circlemono/simpelBlock/docs"
-	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/Circlemono/simpelBlock/Block"
@@ -28,8 +28,10 @@ func Runserver() {
 	r.GET("/", Root)
 	r.GET("/GetLocalHost", GetLocalHost)
 	r.GET("/show", ShowTX)
+	r.GET("/balance", Balance)
 	r.GET("/Init", WebInit)
 	r.GET("/version", Version)
+	r.POST("/BlockChain", BlockChain)
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 
@@ -41,6 +43,19 @@ func Cors() gin.HandlerFunc {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Next()
 	}
+}
+
+// @Summary 当前区块链数据
+// @Description 用于同步本地区块链数据
+// @Tags 服务器组   //swagger API分类标签, 同一个tag为一组
+// @Success 200 {object} {"statuc":"ok", "data":"bytesdata"}
+// @Router /BlockChain [POST]
+func BlockChain(c *gin.Context) {
+	cli := Block.GetInstance()
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"data":   string(cli.GetBlockChain()),
+	})
 }
 
 func Root(c *gin.Context) {
@@ -59,36 +74,55 @@ func WebInit(c *gin.Context) {
 
 }
 
+// @Summary 余额
+// @Description 返回指定用户的余额信息
+// @Tags 前端   //swagger API分类标签, 同一个tag为一组
+// @Param address string
+// @Success 200 {object} gin.H
+// @Router /balance [get]
+func Balance(c *gin.Context) {
+	address := c.DefaultQuery("address", "")
+	if address == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
+	}
+
+	cli := Block.GetInstance()
+	balance := cli.GetBalance(address)
+
+	c.JSON(http.StatusBadRequest, gin.H{
+		"status": "ok",
+		"data":   balance,
+	})
+}
+
+// @Summary 区块链版本
+// @Description 返回当前区块链长度
+// @Tags 前端   //swagger API分类标签, 同一个tag为一组
+// @Success 200 {object} gin.H
+// @Router /show [get]
 func ShowTX(c *gin.Context) {
 	address := c.DefaultQuery("address", "")
 	if address == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"status": "ok",
-		})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
 	}
 
 }
 
 func Syncdata() {
 	cli := Block.GetInstance()
-
-	resp, err := http.Get(cli.Localhost + "/version")
-	if err != nil {
-
+	if cli.GetServerVersion() != cli.GetVersion() {
+		log.Printf("本机区块链版本低于集群版本, 正在同步")
+		blockdata := cli.GetBlockChain()
+		log.Printf("下载完毕! 共 %d 字节\n", len(blockdata))
+		cli.SetBlockChain(blockdata)
+		log.Println("同步完毕")
 	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-
-	}
-
-	fmt.Println(string(body))
-	//获取版本数据
+	log.Println("版本一致")
 }
 
 // @Summary 区块链版本
 // @Description 返回当前区块链长度
+// @Tags 前端   //swagger API分类标签, 同一个tag为一组
 // @Success 200 {object} gin.H
 // @Router /version [get]
 func Version(c *gin.Context) {

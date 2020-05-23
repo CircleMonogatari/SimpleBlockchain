@@ -1,9 +1,11 @@
 package Block
 
 import (
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/boltdb/bolt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -23,6 +25,28 @@ func GetInstance() *CLI {
 		Cli = &CLI{}
 	}
 	return Cli
+}
+
+func (cli *CLI) GetServerVersion() int {
+	url := "http://" + cli.Localhost
+
+	resp, err := http.Get(url + "/version")
+	if err != nil {
+		log.Println(err)
+	}
+	defer resp.Body.Close()
+	//
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println(err)
+	}
+
+	var mapResult map[string]interface{}
+	err = json.Unmarshal(body, &mapResult)
+	if err != nil {
+		log.Println(err)
+	}
+	return mapResult["version"].(int)
 }
 
 func (cli *CLI) Run() {
@@ -105,13 +129,6 @@ func (cli *CLI) Run() {
 	//}
 }
 
-//获取区块链
-func (cli *CLI) RreateBlockchain(address string) {
-	bc := NewBlockchain(address)
-	bc.DB.Close()
-	fmt.Println("Done!")
-}
-
 func (cli *CLI) GetBalance(address string) {
 	bc := NewBlockchain(address)
 	defer bc.DB.Close()
@@ -184,32 +201,34 @@ func (cli *CLI) GetLocalHost() string {
 	return cli.Localhost
 }
 
-func (cli *CLI) BlockChain() {
+//获取区块链数据并ENcode
+func (cli *CLI) GetBlockChain() []byte {
+	blockchain := NewBlockchain("")
+	blocks := blockchain.GetBlockAll()
 
-	bc := NewBlockchain("")
-	defer bc.DB.Close()
-
-	err := bc.DB.View(func(tx *bolt.Tx) error {
-
-		return nil
-	})
+	//序列化
+	var result bytes.Buffer
+	encoder := gob.NewEncoder(&result)
+	err := encoder.Encode(blocks)
 	if err != nil {
-		log.Panic("Read BlockChain Error")
+		return nil
 	}
+	return result.Bytes()
 
 }
 
-func (cli *CLI) SynchronizeBlock() {
-	//判断版本
-	var lateversion int
-	version := cli.GetVersion()
+func (cli *CLI) SetBlockChain(d []byte) error {
+	var blocks []BlockByte
+	blockchain := NewBlockchain("")
 
-	//获取中心服务器版本
-	//lateversion =
-
-	if version != lateversion {
-
+	decoder := gob.NewDecoder(bytes.NewBuffer(d))
+	err := decoder.Decode(&blocks)
+	if err != nil {
+		log.Fatal(err)
+		return err
 	}
+	blockchain.SetBlockAll(blocks)
+	return nil
 }
 
 func (cli *CLI) ServerVersion() (int, error) {

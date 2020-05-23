@@ -71,21 +71,32 @@ type BlockByte struct {
 }
 
 //获取DB中所有的Key和value
-func (bc *BlockChain) GetBlockAll() []*BlockByte {
-	var blocks []*BlockByte
+func (bc *BlockChain) GetBlockAll() []BlockByte {
+	var blocks []BlockByte
 
 	it := bc.Iterator()
+
+	blocks = append(blocks, BlockByte{[]byte("1"), it.currentHash})
 	for {
 		block := it.Next()
 		value := bc.GetValue(block.Hash)
 
-		blocks = append(blocks, &BlockByte{block.Hash, value})
+		blocks = append(blocks, BlockByte{block.Hash, value})
 		if len(block.PrevBlockHash) == 0 {
 			break
 		}
 	}
-
 	return blocks
+}
+
+func (bc *BlockChain) SetBlockAll(bs []BlockByte) {
+
+	for _, block := range bs {
+		err := bc.SetValue(block.Key, block.Value)
+		if err != nil {
+			log.Print(err)
+		}
+	}
 }
 
 func (bc *BlockChain) GetValue(key []byte) []byte {
@@ -99,6 +110,19 @@ func (bc *BlockChain) GetValue(key []byte) []byte {
 		return nil
 	}
 	return value
+}
+
+func (bc *BlockChain) SetValue(key, value []byte) error {
+
+	err := bc.DB.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte(blocksBucket))
+		err := b.Put(key, value)
+		return err
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 //查找所有相关交易
