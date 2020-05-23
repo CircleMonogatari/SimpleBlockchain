@@ -25,9 +25,75 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/BlockChain": {
+            "post": {
+                "description": "用于同步本地区块链数据",
+                "tags": [
+                    "服务器组   //swagger API分类标签",
+                    "同一个tag为一组"
+                ],
+                "summary": "当前区块链数据",
+                "responses": {
+                    "200": {
+                        "description": "statuc\":\"ok\", \"data\":\"bytesdata\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/balance": {
+            "get": {
+                "description": "返回指定用户的余额信息",
+                "tags": [
+                    "前端   //swagger API分类标签",
+                    "同一个tag为一组"
+                ],
+                "summary": "余额",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ivan",
+                        "name": "address",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/show": {
+            "get": {
+                "description": "返回当前区块链长度",
+                "tags": [
+                    "前端   //swagger API分类标签",
+                    "同一个tag为一组"
+                ],
+                "summary": "区块链版本",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/version": {
             "get": {
                 "description": "返回当前区块链长度",
+                "tags": [
+                    "前端   //swagger API分类标签",
+                    "同一个tag为一组"
+                ],
                 "summary": "区块链版本",
                 "responses": {
                     "200": {

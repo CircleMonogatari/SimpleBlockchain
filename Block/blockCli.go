@@ -129,18 +129,13 @@ func (cli *CLI) Run() {
 	//}
 }
 
-func (cli *CLI) GetBalance(address string) {
+func (cli *CLI) GetBalance(address string) []TXOutput {
 	bc := NewBlockchain(address)
 	defer bc.DB.Close()
 
-	balance := 0
 	UTXOs := bc.FindUTXO(address)
 
-	for _, out := range UTXOs {
-		balance += out.Value
-	}
-
-	fmt.Printf("Balance of '%s': %d\n", address, balance)
+	return UTXOs
 }
 
 func (cli *CLI) printUsage() {

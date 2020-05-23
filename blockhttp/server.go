@@ -47,8 +47,8 @@ func Cors() gin.HandlerFunc {
 
 // @Summary 当前区块链数据
 // @Description 用于同步本地区块链数据
-// @Tags 服务器组   //swagger API分类标签, 同一个tag为一组
-// @Success 200 {object} {"statuc":"ok", "data":"bytesdata"}
+// @Tags 服务器组
+// @Success 200 {object} gin.H {"statuc":"ok", "data":"bytesdata"}
 // @Router /BlockChain [POST]
 func BlockChain(c *gin.Context) {
 	cli := Block.GetInstance()
@@ -76,8 +76,8 @@ func WebInit(c *gin.Context) {
 
 // @Summary 余额
 // @Description 返回指定用户的余额信息
-// @Tags 前端   //swagger API分类标签, 同一个tag为一组
-// @Param address string
+// @Tags 前端
+// @Param address query string false "Ivan"
 // @Success 200 {object} gin.H
 // @Router /balance [get]
 func Balance(c *gin.Context) {
@@ -97,7 +97,7 @@ func Balance(c *gin.Context) {
 
 // @Summary 区块链版本
 // @Description 返回当前区块链长度
-// @Tags 前端   //swagger API分类标签, 同一个tag为一组
+// @Tags 前端
 // @Success 200 {object} gin.H
 // @Router /show [get]
 func ShowTX(c *gin.Context) {
