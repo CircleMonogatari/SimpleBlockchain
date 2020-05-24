@@ -26,23 +26,65 @@ func Runserver() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/", Root)
-	r.GET("/show", ShowTX)
-	r.GET("/balance", Balance)
 	r.GET("/Init", WebInit)
-	r.GET("/version", Version)
 
 
-	//web端
+	//前端
+
+	r.POST("/balancedetailed", BalanceDetailed)		//余额明细
+	r.GET("/balance", Balance)			//用户余额
+	r.POST("/transaction", Transaction)	//茶叶交易
+	r.POST("/entry", Entry)				//数据录入
+	r.POST("/teadata", TeaData)			//茶叶数据
+
 
 	//服务端
-	r.GET("/registerinfo", RegisterInfo)
-	r.POST("/BlockChain", BlockChain)
+	r.GET("/registerinfo", RegisterInfo) //服务器列表
+
+	r.GET("/version", Version)			//当前区块链版本
+	r.POST("/BlockChain", BlockChain)	//区块链数据
+
 
 
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 
 	fmt.Println("WEB END")
+}
+
+// @Summary 茶叶数据
+// @Description 获取指定地址的茶叶数据
+// @Tags 前端
+// @Param address formData string true "ASHASDSABDKJQWFKJBASFKAF"
+// @Success 200 {object} gin.H {"statuc":"ok", "data":""}
+// @Failure 400 {object} gin.H {"statuc":"error", "message":"失败原因"}
+// @Router /teadata [POST]
+func TeaData(context *gin.Context) {
+
+}
+
+
+// @Summary 数据录入
+// @Description 生产茶叶数据， 用于交易
+// @Tags 前端
+// @Param address formData string true "Ivan"
+// @Success 200 {object} gin.H {"statuc":"ok", "data":""}
+// @Failure 400 {object} gin.H {"statuc":"error", "message":"失败原因"}
+// @Router /entry [POST]
+func Entry(c *gin.Context) {
+
+}
+
+
+// @Summary 茶叶交易
+// @Description 用于两个不同地址之间的数据交易
+// @Tags 前端
+// @Param address formData string true "Ivan"
+// @Success 200 {object} gin.H {"statuc":"ok", "data":"bytesdata"}
+// @Failure 400 {object} gin.H {"statuc":"error", "message":"失败原因"}
+// @Router /transaction [POST]
+func Transaction(c *gin.Context) {
+
 }
 
 func Cors() gin.HandlerFunc {
@@ -93,10 +135,26 @@ type Response struct {
 	data   interface{}
 }
 
+// @Summary 余额明细
+// @Description 返回指定地址的交易明细
+// @Tags 前端
+// @Param address query string true "Ivan"
+// @Success 200 {object} gin.H
+// @Router /balancedetailed [get]
+func BalanceDetailed(c *gin.Context) {
+	address := c.DefaultQuery("address", "")
+	if address == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
+	}
+	c.JSON(http.StatusBadRequest, gin.H{
+		"status": "ok",
+	})
+}
+
 // @Summary 余额
 // @Description 返回指定用户的余额信息
 // @Tags 前端
-// @Param address query string false "Ivan"
+// @Param address query string true "Ivan"
 // @Success 200 {object} Response
 // @Router /balance [get]
 func Balance(c *gin.Context) {
@@ -111,21 +169,6 @@ func Balance(c *gin.Context) {
 	c.JSON(http.StatusBadRequest, Response{
 		status: "ok",
 		data:   balance,
-	})
-}
-
-// @Summary 区块链版本
-// @Description 返回当前区块链长度
-// @Tags 前端
-// @Success 200 {object} gin.H
-// @Router /show [get]
-func ShowTX(c *gin.Context) {
-	address := c.DefaultQuery("address", "")
-	if address == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
-	}
-	c.JSON(http.StatusBadRequest, gin.H{
-		"status": "ok",
 	})
 }
 

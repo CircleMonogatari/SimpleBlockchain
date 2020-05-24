@@ -34,7 +34,8 @@
                         "type": "string",
                         "description": "Ivan",
                         "name": "address",
-                        "in": "query"
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -47,16 +48,138 @@
                 }
             }
         },
-        "/show": {
+        "/balancedetailed": {
             "get": {
-                "description": "返回当前区块链长度",
+                "description": "返回指定地址的交易明细",
                 "tags": [
                     "前端"
                 ],
-                "summary": "区块链版本",
+                "summary": "余额明细",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ivan",
+                        "name": "address",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/entry": {
+            "post": {
+                "description": "生产茶叶数据， 用于交易",
+                "tags": [
+                    "前端"
+                ],
+                "summary": "数据录入",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ivan",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "statuc\":\"ok\", \"data\":\"\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "statuc\":\"error\", \"message\":\"失败原因\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/registerinfo": {
+            "get": {
+                "description": "返回指当前所有的注册信息",
+                "tags": [
+                    "服务端"
+                ],
+                "summary": "返回注册信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/teadata": {
+            "post": {
+                "description": "获取指定地址的茶叶数据",
+                "tags": [
+                    "前端"
+                ],
+                "summary": "茶叶数据",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ASHASDSABDKJQWFKJBASFKAF",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "statuc\":\"ok\", \"data\":\"\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "statuc\":\"error\", \"message\":\"失败原因\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/transaction": {
+            "post": {
+                "description": "用于两个不同地址之间的数据交易",
+                "tags": [
+                    "前端"
+                ],
+                "summary": "茶叶交易",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ivan",
+                        "name": "address",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "statuc\":\"ok\", \"data\":\"bytesdata\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "statuc\":\"error\", \"message\":\"失败原因\"}",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
