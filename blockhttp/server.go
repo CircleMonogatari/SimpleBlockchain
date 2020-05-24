@@ -2,11 +2,11 @@ package blockhttp
 
 import (
 	"fmt"
-	_ "github.com/Circlemono/simpelBlock/docs"
+	_ "github.com/CircleMonogatari/SimpleBlockchain/docs"
 	"log"
 	"net/http"
 
-	"github.com/Circlemono/simpelBlock/Block"
+	"github.com/CircleMonogatari/SimpleBlockchain/Block"
 	"github.com/gin-gonic/gin"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -26,12 +26,19 @@ func Runserver() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/", Root)
-	r.GET("/GetLocalHost", GetLocalHost)
 	r.GET("/show", ShowTX)
 	r.GET("/balance", Balance)
 	r.GET("/Init", WebInit)
 	r.GET("/version", Version)
+
+
+	//web端
+
+	//服务端
+	r.GET("/registerinfo", RegisterInfo)
 	r.POST("/BlockChain", BlockChain)
+
+
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 
@@ -62,7 +69,14 @@ func Root(c *gin.Context) {
 	c.HTML(200, "index.html", nil)
 }
 
-func GetLocalHost(c *gin.Context) {
+
+
+// @Summary 返回注册信息
+// @Description 返回指当前所有的注册信息
+// @Tags 服务端
+// @Success 200 {object} gin.H
+// @Router /registerinfo [get]
+func RegisterInfo(c *gin.Context) {
 	cli := Block.GetInstance()
 
 	c.JSON(200, gin.H{

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/Circlemono/simpelBlock/Block"
-	"github.com/Circlemono/simpelBlock/blockhttp"
+	"github.com/CircleMonogatari/SimpleBlockchain/Block"
+	"github.com/CircleMonogatari/SimpleBlockchain/blockhttp"
 )
 
 func main() {

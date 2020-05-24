@@ -1,4 +1,4 @@
-module github.com/Circlemono/simpelBlock
+module github.com/CircleMonogatari/SimpleBlockchain
 
 go 1.13
 

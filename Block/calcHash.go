@@ -9,6 +9,10 @@ import (
 	"math/big"
 )
 
+
+//区块加密模块
+
+//初始交易额， 以后进行外部传入
 const targetBits = 24
 
 type ProofOfWork struct {

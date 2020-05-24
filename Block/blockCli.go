@@ -16,7 +16,24 @@ import (
 type CLI struct {
 	Localhost string
 	mode      int
+	Servers []Serverinfo
 }
+
+
+type servertype int
+
+const (
+	CentralServer servertype  = iota +1
+	TransactionServer
+	InteractiveServer
+)
+
+type Serverinfo struct {
+	ServerType servertype
+	Address string
+}
+
+
 
 var Cli *CLI
 
