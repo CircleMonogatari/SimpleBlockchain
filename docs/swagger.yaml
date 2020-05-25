@@ -18,7 +18,7 @@ paths:
             $ref: '#/definitions/gin.H'
       summary: 当前区块链数据
       tags:
-      - 服务器组
+      - 服务端
   /balance:
     get:
       description: 返回指定用户的余额信息
@@ -60,6 +60,16 @@ paths:
       - description: Ivan
         in: formData
         name: address
+        required: true
+        type: string
+      - description: "5000"
+        in: formData
+        name: amount
+        required: true
+        type: integer
+      - description: json
+        in: formData
+        name: data
         required: true
         type: string
       responses:
@@ -112,16 +122,26 @@ paths:
       parameters:
       - description: Ivan
         in: formData
-        name: address
+        name: from
         required: true
         type: string
+      - description: Ble
+        in: formData
+        name: to
+        required: true
+        type: string
+      - description: "300"
+        in: formData
+        name: amount
+        required: true
+        type: integer
       responses:
         "200":
-          description: statuc":"ok", "data":"bytesdata"}
+          description: statuc":"ok"}
           schema:
             $ref: '#/definitions/gin.H'
         "400":
-          description: statuc":"error", "message":"失败原因"}
+          description: statuc":"error", "data":"失败原因"}
           schema:
             $ref: '#/definitions/gin.H'
       summary: 茶叶交易
@@ -137,5 +157,5 @@ paths:
             $ref: '#/definitions/gin.H'
       summary: 区块链版本
       tags:
-      - 前端
+      - 服务端
 swagger: "2.0"

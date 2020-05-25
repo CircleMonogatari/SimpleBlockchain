@@ -23,8 +23,6 @@ type TXInput struct {
 	ScriptSig string
 }
 
-const subsidy = 20
-
 //交易输出
 type TXOutput struct {
 	Value        int
@@ -51,7 +49,7 @@ func (tx *Transaction) SetID() {
 }
 
 //创建 coinbase 交易
-func NewCoinbaseTX(to, data string) *Transaction {
+func NewCoinbaseTX(to, data string, subsidy int) *Transaction {
 	if data == "" {
 		data = fmt.Sprintf("Reward to '%s'", to)
 	}
@@ -66,14 +64,15 @@ func NewCoinbaseTX(to, data string) *Transaction {
 }
 
 //货币交易
-func NewUTXOTransaction(from, to string, amount int, bc *BlockChain) *Transaction {
+func NewUTXOTransaction(from, to string, amount int, bc *BlockChain) (*Transaction, error) {
 	var inputs []TXInput
 	var outputs []TXOutput
 
 	//找到符合条件的输出
 	acc, validOutputs := bc.FindSpendableOutputs(from, amount)
 	if acc < amount {
-		log.Panic("Error: Not enough funds")
+		log.Println("Error: Not enough funds")
+		return nil, fmt.Errorf("余额不足")
 	}
 
 	for txid, outs := range validOutputs {
@@ -97,7 +96,7 @@ func NewUTXOTransaction(from, to string, amount int, bc *BlockChain) *Transactio
 	tx := Transaction{nil, inputs, outputs}
 	tx.SetID()
 
-	return &tx
+	return &tx, nil
 }
 
 //验证输入持有者

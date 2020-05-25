@@ -30,7 +30,7 @@ func NewBlockchain(address string) *BlockChain {
 
 		//如果数据为空, 添加创世块
 		if b == nil {
-			cbtx := NewCoinbaseTX(address, genesisCoinbaseData)
+			cbtx := NewCoinbaseTX(address, genesisCoinbaseData, 20)
 			genesis := NewGenesisBlock(cbtx)
 			b, err := tx.CreateBucket([]byte(blocksBucket))
 			if err != nil {
@@ -45,6 +45,9 @@ func NewBlockchain(address string) *BlockChain {
 		}
 		return nil
 	})
+	if err != nil {
+		return nil
+	}
 
 	bc := BlockChain{tip, db}
 
@@ -171,6 +174,32 @@ func (bc *BlockChain) MineBlock(transactions []*Transaction) {
 		return nil
 	})
 
+}
+
+//返回当前用户
+func (bc *BlockChain) Users() []string {
+	usermap := make(map[string]int)
+
+	it := bc.Iterator()
+	for {
+		block := it.Next()
+
+		for _, tr := range block.Transactions {
+			for _, out := range tr.Vout {
+				usermap[out.ScriptPubKey] = 1
+			}
+		}
+
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
+	}
+	var users []string
+
+	for key := range usermap {
+		users = append(users, key)
+	}
+	return users
 }
 
 //添加区块

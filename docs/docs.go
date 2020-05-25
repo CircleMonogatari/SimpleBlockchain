@@ -29,7 +29,7 @@ var doc = `{
             "post": {
                 "description": "用于同步本地区块链数据",
                 "tags": [
-                    "服务器组"
+                    "服务端"
                 ],
                 "summary": "当前区块链数据",
                 "responses": {
@@ -106,6 +106,20 @@ var doc = `{
                         "type": "string",
                         "description": "Ivan",
                         "name": "address",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "5000",
+                        "name": "amount",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "json",
+                        "name": "data",
                         "in": "formData",
                         "required": true
                     }
@@ -186,20 +200,34 @@ var doc = `{
                     {
                         "type": "string",
                         "description": "Ivan",
-                        "name": "address",
+                        "name": "from",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ble",
+                        "name": "to",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "300",
+                        "name": "amount",
                         "in": "formData",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "statuc\":\"ok\", \"data\":\"bytesdata\"}",
+                        "description": "statuc\":\"ok\"}",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
                     },
                     "400": {
-                        "description": "statuc\":\"error\", \"message\":\"失败原因\"}",
+                        "description": "statuc\":\"error\", \"data\":\"失败原因\"}",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -211,7 +239,7 @@ var doc = `{
             "get": {
                 "description": "返回当前区块链长度",
                 "tags": [
-                    "前端"
+                    "服务端"
                 ],
                 "summary": "区块链版本",
                 "responses": {

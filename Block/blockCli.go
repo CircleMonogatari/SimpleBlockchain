@@ -16,24 +16,21 @@ import (
 type CLI struct {
 	Localhost string
 	mode      int
-	Servers []Serverinfo
+	Servers   []Serverinfo
 }
-
 
 type servertype int
 
 const (
-	CentralServer servertype  = iota +1
+	CentralServer servertype = iota + 1
 	TransactionServer
 	InteractiveServer
 )
 
 type Serverinfo struct {
 	ServerType servertype
-	Address string
+	Address    string
 }
-
-
 
 var Cli *CLI
 
@@ -69,9 +66,10 @@ func (cli *CLI) GetServerVersion() int {
 func (cli *CLI) Run() {
 	cli.validateArgs()
 
-	mode := flag.Int("mode", 0, "服务器类型: 0 中心服务器; 1 功能服务器; 2 处理服务器")
+	mode := flag.Int("mode", 0, "服务器类型: 1 中心服务器; 2 功能服务器; 3 处理服务器")
 	if *mode == 0 {
 		log.Printf("服务器类型不能为空")
+
 	}
 
 	cli.mode = *mode
@@ -146,7 +144,21 @@ func (cli *CLI) Run() {
 	//}
 }
 
+//同步数据
+func (cli *CLI) Syncdata() {
+
+	if cli.GetServerVersion() != cli.GetVersion() {
+		log.Printf("本机区块链版本低于集群版本, 正在同步")
+		blockdata := cli.GetBlockChain()
+		log.Printf("下载完毕! 共 %d 字节\n", len(blockdata))
+		cli.SetBlockChain(blockdata)
+		log.Println("同步完毕")
+	}
+	log.Println("版本一致")
+}
+
 func (cli *CLI) GetBalance(address string) []TXOutput {
+	cli.Syncdata()
 	bc := NewBlockchain(address)
 	defer bc.DB.Close()
 
@@ -157,7 +169,7 @@ func (cli *CLI) GetBalance(address string) []TXOutput {
 
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
-	fmt.Println("  getbalance -address ADDRESS - Get balance of ADDRESS")
+	fmt.Println("  mode CentralServer is 0 ; ")
 	fmt.Println("  createblockchain -address ADDRESS - Create a blockchain and send genesis block reward to ADDRESS")
 	fmt.Println("  printchain - Print all the blocks of the blockchain")
 	fmt.Println("  send -from FROM -to TO -amount AMOUNT - Send AMOUNT of coins from FROM address to TO")
@@ -191,14 +203,30 @@ func (cli *CLI) printChain() {
 	}
 }
 
-//send
-func (cli *CLI) Send(from, to string, amount int) {
+//录入
+func (cli *CLI) Entry(address, data string, amount int) error {
+	cli.Syncdata()
+	bc := NewBlockchain(address)
+	defer bc.DB.Close()
+
+	cbtx := NewCoinbaseTX(address, data, amount)
+
+	bc.MineBlock([]*Transaction{cbtx})
+	return nil
+}
+
+//交易
+func (cli *CLI) Send(from, to string, amount int) error {
+	cli.Syncdata()
 	bc := NewBlockchain(from)
 	defer bc.DB.Close()
 
-	tx := NewUTXOTransaction(from, to, amount, bc)
+	tx, err := NewUTXOTransaction(from, to, amount, bc)
+	if err != nil {
+		return err
+	}
 	bc.MineBlock([]*Transaction{tx})
-	fmt.Println("Success!")
+	return nil
 }
 
 func (cli *CLI) GetVersion() int {
@@ -209,12 +237,22 @@ func (cli *CLI) GetVersion() int {
 	return bc.Version()
 }
 
+func (cli *CLI) Users() []string {
+
+	bc := NewBlockchain("")
+	defer bc.DB.Close()
+
+	return bc.Users()
+
+}
+
 func (cli *CLI) GetLocalHost() string {
 	return cli.Localhost
 }
 
 //获取区块链数据并ENcode
 func (cli *CLI) GetBlockChain() []byte {
+	cli.Syncdata()
 	blockchain := NewBlockchain("")
 	blocks := blockchain.GetBlockAll()
 
@@ -229,7 +267,9 @@ func (cli *CLI) GetBlockChain() []byte {
 
 }
 
+//同步数据到DB
 func (cli *CLI) SetBlockChain(d []byte) error {
+	cli.Syncdata()
 	var blocks []BlockByte
 	blockchain := NewBlockchain("")
 
@@ -243,6 +283,7 @@ func (cli *CLI) SetBlockChain(d []byte) error {
 	return nil
 }
 
+//请求服务器版本
 func (cli *CLI) ServerVersion() (int, error) {
 	//获取版本
 	resp, err := http.Get(cli.Localhost + "/version")
