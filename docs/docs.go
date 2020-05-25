@@ -62,7 +62,7 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/blockhttp.Response"
+                            "$ref": "#/definitions/gin.H"
                         }
                     }
                 }
@@ -235,6 +235,23 @@ var doc = `{
                 }
             }
         },
+        "/users": {
+            "post": {
+                "description": "获取所有区块链中的用户地址(在实际的区块链中该地址是保密的, 当前为demo演示接口)",
+                "tags": [
+                    "Demo接口"
+                ],
+                "summary": "用户数据",
+                "responses": {
+                    "200": {
+                        "description": "{\"data\":[\"sadhaj\",\"Pedro\",\"Ivan\"],\"statuc\":\"ok\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/version": {
             "get": {
                 "description": "返回当前区块链长度",
@@ -254,9 +271,6 @@ var doc = `{
         }
     },
     "definitions": {
-        "blockhttp.Response": {
-            "type": "object"
-        },
         "gin.H": {
             "type": "object",
             "additionalProperties": true

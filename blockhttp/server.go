@@ -142,7 +142,7 @@ func Cors() gin.HandlerFunc {
 // @Summary 当前区块链数据
 // @Description 用于同步本地区块链数据
 // @Tags 服务端
-// @Success 200 {object} gin.H {"statuc":"ok", "data":"bytesdata"}
+// @Success 200 {object} gin.H "{"statuc":"ok", "data":"bytesdata"}"
 // @Router /BlockChain [POST]
 func BlockChain(c *gin.Context) {
 	cli := Block.GetInstance()
@@ -159,12 +159,13 @@ func Root(c *gin.Context) {
 // @Summary 返回注册信息
 // @Description 返回指当前所有的注册信息
 // @Tags 服务端
-// @Success 200 {object} gin.H
+// @Success 200 {object} gin.H "{"statuc":"ok", "addres": []}"
 // @Router /registerinfo [get]
 func RegisterInfo(c *gin.Context) {
 	cli := Block.GetInstance()
 
 	c.JSON(200, gin.H{
+		"status": "ok",
 		"addres": cli.GetVersion(),
 	})
 }
@@ -209,7 +210,7 @@ func Balance(c *gin.Context) {
 // @Summary 区块链版本
 // @Description 返回当前区块链长度
 // @Tags 服务端
-// @Success 200 {object} gin.H
+// @Success 200 {object} gin.H "{"version":20}"
 // @Router /version [get]
 func Version(c *gin.Context) {
 	cli := Block.GetInstance()

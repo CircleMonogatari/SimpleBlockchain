@@ -170,9 +170,6 @@ func (cli *CLI) GetBalance(address string) []TXOutput {
 func (cli *CLI) printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  mode CentralServer is 0 ; ")
-	fmt.Println("  createblockchain -address ADDRESS - Create a blockchain and send genesis block reward to ADDRESS")
-	fmt.Println("  printchain - Print all the blocks of the blockchain")
-	fmt.Println("  send -from FROM -to TO -amount AMOUNT - Send AMOUNT of coins from FROM address to TO")
 }
 
 func (cli *CLI) validateArgs() {
@@ -238,12 +235,15 @@ func (cli *CLI) GetVersion() int {
 }
 
 func (cli *CLI) Users() []string {
-
 	bc := NewBlockchain("")
 	defer bc.DB.Close()
 
 	return bc.Users()
+}
 
+func (cli *CLI) GetServerList() []Serverinfo {
+
+	return cli.Servers
 }
 
 func (cli *CLI) GetLocalHost() string {
