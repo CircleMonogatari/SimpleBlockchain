@@ -38,12 +38,27 @@ func Runserver() {
 
 	//服务端
 	r.GET("/registerinfo", RegisterInfo) //服务器列表
+	r.GET("/register", Register)         //注册服务器
 	r.GET("/version", Version)           //当前区块链版本
 	r.POST("/BlockChain", BlockChain)    //区块链数据
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 
 	fmt.Println("WEB END")
+}
+
+// @Summary 注册服务器到中心服务器中
+// @Description 注册当前服务器信息到中心服务器中
+// @Tags 服务端
+// @Success 200 {object} gin.H "{"statuc":"ok"}"
+// @Router /registerinfo [get]
+func Register(c *gin.Context) {
+	clientaddr := c.ClientIP()
+	fmt.Println(clientaddr)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"data":   clientaddr,
+	})
 }
 
 // @Summary 用户数据

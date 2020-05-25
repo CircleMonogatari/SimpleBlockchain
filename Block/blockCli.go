@@ -74,7 +74,7 @@ func (cli *CLI) Run() {
 
 	cli.mode = *mode
 
-	localhost := flag.String("localhost", "", "填入中心服务器IP, 未填写默认为中心服务器")
+	localhost := flag.String("localhost", "121.37.236.234:8080", "填入中心服务器IP")
 	cli.Localhost = *localhost
 
 	//getBalanceCmd := flag.NewFlagSet("getbalance", flag.ExitOnError)

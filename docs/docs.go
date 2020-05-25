@@ -34,7 +34,7 @@ var doc = `{
                 "summary": "当前区块链数据",
                 "responses": {
                     "200": {
-                        "description": "statuc\":\"ok\", \"data\":\"bytesdata\"}",
+                        "description": "{\"statuc\":\"ok\", \"data\":\"bytesdata\"}",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -149,7 +149,7 @@ var doc = `{
                 "summary": "返回注册信息",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"statuc\":\"ok\", \"addres\": []}",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -261,7 +261,7 @@ var doc = `{
                 "summary": "区块链版本",
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "{\"version\":20}",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
