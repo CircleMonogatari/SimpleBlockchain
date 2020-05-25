@@ -2,12 +2,19 @@ package blockhttp
 
 import (
 	"encoding/json"
+	"github.com/CircleMonogatari/SimpleBlockchain/Block"
 	"io/ioutil"
 	"net/http"
 	"testing"
 
 	"fmt"
 )
+
+func Test_SendServer(t *testing.T) {
+	cli := Block.GetInstance()
+	cli.Localhost = "121.37.236.234:8080"
+	cli.SendAddress()
+}
 
 func Test_findByPk(t *testing.T) {
 	fmt.Println("测试版本 ")

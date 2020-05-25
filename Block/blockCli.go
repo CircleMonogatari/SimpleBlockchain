@@ -77,6 +77,10 @@ func (cli *CLI) Run() {
 	localhost := flag.String("localhost", "121.37.236.234:8080", "填入中心服务器IP")
 	cli.Localhost = *localhost
 
+
+	//注册信息到中心服务器
+	cli.
+
 	//getBalanceCmd := flag.NewFlagSet("getbalance", flag.ExitOnError)
 	//createBlockchainCmd := flag.NewFlagSet("createblockchain", flag.ExitOnError)
 	//sendCmd := flag.NewFlagSet("send", flag.ExitOnError)
@@ -142,6 +146,20 @@ func (cli *CLI) Run() {
 	//
 	//	cli.send(*sendFrom, *sendTo, *sendAmount)
 	//}
+}
+
+//发送本机信息到中心服务器
+func (cli *CLI) SendAddress() {
+
+	url := "http://" + cli.Localhost
+
+	resp, err := http.Get(url + "/register")
+	if err != nil {
+		log.Println(err)
+	}
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(body))
 }
 
 //同步数据
