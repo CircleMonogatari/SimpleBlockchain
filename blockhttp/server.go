@@ -3,6 +3,7 @@ package blockhttp
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/hex"
 	"fmt"
 	"github.com/CircleMonogatari/SimpleBlockchain/Block/Cli"
 	_ "github.com/CircleMonogatari/SimpleBlockchain/docs"
@@ -113,7 +114,7 @@ func Users(context *gin.Context) {
 // @Param address formData string true "ASHASDSABDKJQWFKJBASFKAF"
 // @Success 200 {object} gin.H {"statuc":"ok", "data":""}
 // @Failure 400 {object} gin.H {"statuc":"error", "message":"失败原因"}
-// @Router /teadata [POST]
+// @Router /teadata [post]
 func TeaData(context *gin.Context) {
 
 }
@@ -126,7 +127,7 @@ func TeaData(context *gin.Context) {
 // @Param data formData string true "json"
 // @Success 200 {object} gin.H {"statuc":"ok", "data":""}
 // @Failure 400 {object} gin.H {"statuc":"error", "message":"失败原因"}
-// @Router /entry [POST]
+// @Router /entry [post]
 func Entry(c *gin.Context) {
 	cli := Cli.GetInstance()
 	address := c.PostForm("address")
@@ -158,7 +159,7 @@ func Entry(c *gin.Context) {
 // @Param amount formData int true "300"
 // @Success 200 {object} gin.H {"statuc":"ok"}
 // @Failure 400 {object} gin.H {"statuc":"error", "data":"失败原因"}
-// @Router /transaction [POST]
+// @Router /transaction [post]
 func Transaction(c *gin.Context) {
 	cli := Cli.GetInstance()
 	from := c.PostForm("from")
@@ -192,20 +193,17 @@ func Cors() gin.HandlerFunc {
 // @Description 用于同步本地区块链数据
 // @Tags 服务端
 // @Success 200 {object} gin.H "{"statuc":"ok", "databyte":"bytesdata"}"
-// @Router /blockchain [POST]
+// @Router /blockchain [post]
 func BlockChain(c *gin.Context) {
 	cli := Cli.GetInstance()
 	log.Printf("发送完毕! 共 %d 字节\n", len(cli.GetBlockChain()))
-	log.Println("data:")
-	log.Println(string(cli.GetBlockChain()))
 
 	log.Println("databyte:")
-	log.Println((cli.GetBlockChain()))
+	log.Println(hex.EncodeToString(cli.GetBlockChain()))
 
 	c.JSON(http.StatusOK, gin.H{
-		"status":   "ok",
-		"data":     string(cli.GetBlockChain()),
-		"databyte": (cli.GetBlockChain()),
+		"status": "ok",
+		"data":   hex.EncodeToString(cli.GetBlockChain()),
 	})
 
 }
@@ -233,11 +231,12 @@ func RegisterInfo(c *gin.Context) {
 // @Tags 前端
 // @Param address query string true "Ivan"
 // @Success 200 {object} gin.H
-// @Router /balancedetailed [POST]
+// @Router /balancedetailed [post]
 func BalanceDetailed(c *gin.Context) {
 	address := c.DefaultQuery("address", "")
 	if address == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
+		return
 	}
 
 	cli := Cli.GetInstance()

@@ -86,6 +86,8 @@ func (cli *CLI) GetLocalHost() string {
 func (cli *CLI) GetBlockChain() []byte {
 
 	blockchain := Block.NewBlockchain("")
+	defer blockchain.DB.Close()
+
 	blocks := blockchain.GetBlockAll()
 
 	//序列化
@@ -104,6 +106,7 @@ func (cli *CLI) SetBlockChain(d []byte) error {
 
 	var blocks []Block.BlockByte
 	blockchain := Block.NewBlockchain("")
+	defer blockchain.DB.Close()
 
 	decoder := gob.NewDecoder(bytes.NewBuffer(d))
 	err := decoder.Decode(&blocks)
