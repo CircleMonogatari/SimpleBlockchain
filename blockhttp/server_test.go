@@ -2,7 +2,7 @@ package blockhttp
 
 import (
 	"encoding/json"
-	"github.com/CircleMonogatari/SimpleBlockchain/Block"
+	"github.com/CircleMonogatari/SimpleBlockchain/Block/Cli"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -11,7 +11,7 @@ import (
 )
 
 func Test_SendServer(t *testing.T) {
-	cli := Block.GetInstance()
+	cli := Cli.GetInstance()
 	cli.Localhost = "121.37.236.234:8080"
 	cli.SendAddress()
 }

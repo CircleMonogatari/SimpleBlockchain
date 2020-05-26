@@ -1,12 +1,15 @@
 package blockhttp
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
+	"github.com/CircleMonogatari/SimpleBlockchain/Block/Cli"
 	_ "github.com/CircleMonogatari/SimpleBlockchain/docs"
+	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/CircleMonogatari/SimpleBlockchain/Block"
 	"github.com/gin-gonic/gin"
 
 	swaggerFiles "github.com/swaggo/files"
@@ -50,14 +53,39 @@ func Runserver() {
 // @Summary 注册服务器到中心服务器中
 // @Description 注册当前服务器信息到中心服务器中
 // @Tags 服务端
+// @Param mode formData int true "5000"
 // @Success 200 {object} gin.H "{"statuc":"ok"}"
-// @Router /registerinfo [get]
+// @Router /register [get]
 func Register(c *gin.Context) {
 	clientaddr := c.ClientIP()
-	fmt.Println(clientaddr)
+	cli := Cli.GetInstance()
+
+	modestr := c.PostForm("mode")
+
+	mode, err := strconv.Atoi(modestr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   err,
+		})
+		return
+	}
+
+	//注册服务器
+	cli.Register(Cli.Servertype(mode), clientaddr)
+
+	//数据转为二进制
+	var result bytes.Buffer
+	encoder := gob.NewEncoder(&result)
+	err = encoder.Encode(cli.GetServerList())
+	if err != nil {
+		log.Println(err)
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-		"data":   clientaddr,
+		"status":   "ok",
+		"data":     cli.GetServerList(),
+		"databyte": result.Bytes(),
 	})
 }
 
@@ -67,7 +95,7 @@ func Register(c *gin.Context) {
 // @Success 200 {object} gin.H "{"data":["sadhaj","Pedro","Ivan"],"statuc":"ok"}"
 // @Router /users [POST]
 func Users(context *gin.Context) {
-	cli := Block.GetInstance()
+	cli := Cli.GetInstance()
 
 	context.JSON(http.StatusOK, gin.H{
 		"statuc": "ok",
@@ -96,7 +124,7 @@ func TeaData(context *gin.Context) {
 // @Failure 400 {object} gin.H {"statuc":"error", "message":"失败原因"}
 // @Router /entry [POST]
 func Entry(c *gin.Context) {
-	cli := Block.GetInstance()
+	cli := Cli.GetInstance()
 	address := c.PostForm("address")
 	amountstr := c.PostForm("amount")
 	data := c.PostForm("amount")
@@ -126,7 +154,7 @@ func Entry(c *gin.Context) {
 // @Failure 400 {object} gin.H {"statuc":"error", "data":"失败原因"}
 // @Router /transaction [POST]
 func Transaction(c *gin.Context) {
-	cli := Block.GetInstance()
+	cli := Cli.GetInstance()
 	from := c.PostForm("from")
 	to := c.PostForm("to")
 	amountstr := c.PostForm("amount")
@@ -157,13 +185,15 @@ func Cors() gin.HandlerFunc {
 // @Summary 当前区块链数据
 // @Description 用于同步本地区块链数据
 // @Tags 服务端
-// @Success 200 {object} gin.H "{"statuc":"ok", "data":"bytesdata"}"
+// @Success 200 {object} gin.H "{"statuc":"ok", "databyte":"bytesdata"}"
 // @Router /BlockChain [POST]
 func BlockChain(c *gin.Context) {
-	cli := Block.GetInstance()
+	cli := Cli.GetInstance()
+	log.Printf("发送完毕! 共 %d 字节\n", len(cli.GetBlockChain()))
+
 	c.JSON(http.StatusOK, gin.H{
-		"status": "ok",
-		"data":   string(cli.GetBlockChain()),
+		"status":   "ok",
+		"databyte": string(cli.GetBlockChain()),
 	})
 }
 
@@ -177,11 +207,11 @@ func Root(c *gin.Context) {
 // @Success 200 {object} gin.H "{"statuc":"ok", "addres": []}"
 // @Router /registerinfo [get]
 func RegisterInfo(c *gin.Context) {
-	cli := Block.GetInstance()
+	cli := Cli.GetInstance()
 
 	c.JSON(200, gin.H{
 		"status": "ok",
-		"addres": cli.GetVersion(),
+		"addres": cli.GetServerList(),
 	})
 }
 
@@ -213,7 +243,7 @@ func Balance(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
 	}
 
-	cli := Block.GetInstance()
+	cli := Cli.GetInstance()
 	balance := cli.GetBalance(address)
 
 	c.JSON(http.StatusBadRequest, gin.H{
@@ -228,7 +258,7 @@ func Balance(c *gin.Context) {
 // @Success 200 {object} gin.H "{"version":20}"
 // @Router /version [get]
 func Version(c *gin.Context) {
-	cli := Block.GetInstance()
+	cli := Cli.GetInstance()
 	version := cli.GetVersion()
 	c.JSON(200, gin.H{
 		"version": version,
