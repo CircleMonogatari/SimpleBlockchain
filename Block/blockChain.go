@@ -1,6 +1,7 @@
 package Block
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 	"github.com/boltdb/bolt"
@@ -128,7 +129,7 @@ func (bc *BlockChain) SetValue(key, value []byte) error {
 	return nil
 }
 
-//查找所有相关交易
+//查找所有相关交易输出
 func (bc *BlockChain) FindUTXO(address string) []TXOutput {
 	var UTXOs []TXOutput
 	unspentTransactions := bc.FindUnspentTransactions(address)
@@ -313,6 +314,23 @@ func (bc *BlockChain) Traceability(address string) []Transaction {
 	for {
 		block := it.Next()
 
+	optis:
+		for _, tx := range block.Transactions {
+			for _, in := range tx.Vin {
+				if in.ScriptSig == address {
+					Transactions = append(Transactions, *tx)
+					continue optis
+				}
+			}
+
+			for _, out := range tx.Vout {
+				if out.ScriptPubKey == address {
+					Transactions = append(Transactions, *tx)
+					continue optis
+				}
+			}
+		}
+
 		if len(block.PrevBlockHash) == 0 {
 			break
 		}
@@ -334,4 +352,70 @@ func (bc *BlockChain) Balance(address string) []TXOutput {
 		}
 	}
 	return txoutputs
+}
+
+//查找所有相关交易
+//func (bc *BlockChain) FindUTXOList(address string) []Transaction {
+//	var txs []Transaction
+//	var tmpint []TXInput
+//	unspentTransactions := bc.FindUnspentTransactions(address)
+//
+//	txs = append(txs, unspentTransactions...)
+//
+//	tmptx := bc.FindTX(tmpint)
+//
+//	txs = append(txs, tmptx...)
+//
+//	return txs
+//}
+//
+//func (bc *BlockChain) FindTX(tmpint []TXInput) []Transaction {
+//	if tmpint == nil {
+//		return nil
+//	}
+//
+//	var TxTmp []Transaction
+//
+//	for _, in := range tmpint {
+//		if len(in.Txid) == 0 {
+//			continue
+//		}
+//
+//		tx, err := bc.FindTransaction(in.Txid)
+//		if err == nil {
+//			TxTmp = append(TxTmp, tx)
+//		}
+//	}
+//
+//
+//
+//	for _,tx := range {
+//
+//	}
+//
+//	return TxTmp
+//}
+
+func (bc *BlockChain) FindTransaction(txid []byte) (Transaction, error) {
+	bci := bc.Iterator()
+
+	for {
+		block := bci.Next()
+
+		//遍历交易
+		for _, tx := range block.Transactions {
+			//获取交易ID
+
+			if bytes.Compare(tx.ID, txid) == 0 {
+				return *tx, nil
+			}
+
+			//跳出循环
+			if len(block.PrevBlockHash) == 0 {
+				break
+			}
+		}
+
+	}
+	return Transaction{}, fmt.Errorf("未找到交易")
 }

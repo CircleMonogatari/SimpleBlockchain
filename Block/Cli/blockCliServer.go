@@ -5,33 +5,21 @@ import (
 	"encoding/gob"
 	"github.com/CircleMonogatari/SimpleBlockchain/Block"
 	"log"
-	"strconv"
 )
 
-func (cli *CLI) printChain() {
-	bc := Block.NewBlockchain("")
+//获取余额明细
+func (cli *CLI) GetBalanceDetails(address string) []Block.Transaction {
+	bc := Block.NewBlockchain(address)
 	defer bc.DB.Close()
 
-	bci := bc.Iterator()
+	//UTXOs := bc.FindUTXO(address)
 
-	for {
-		block := bci.Next()
-
-		log.Printf("Prev hash: %x\n", block.PrevBlockHash)
-		log.Printf("Hash: %x\n", block.Hash)
-		pow := Block.NewProofOfWork(block)
-		log.Printf("PoW: %s\n", strconv.FormatBool(pow.Validate()))
-		log.Println()
-
-		if len(block.PrevBlockHash) == 0 {
-			break
-		}
-	}
+	return bc.Traceability(address)
 }
 
 //获取余额
 func (cli *CLI) GetBalance(address string) []Block.TXOutput {
-	cli.Syncdata()
+
 	bc := Block.NewBlockchain(address)
 	defer bc.DB.Close()
 
@@ -42,7 +30,7 @@ func (cli *CLI) GetBalance(address string) []Block.TXOutput {
 
 //录入
 func (cli *CLI) Entry(address, data string, amount int) error {
-	cli.Syncdata()
+
 	bc := Block.NewBlockchain(address)
 	defer bc.DB.Close()
 
@@ -54,7 +42,7 @@ func (cli *CLI) Entry(address, data string, amount int) error {
 
 //交易
 func (cli *CLI) Send(from, to string, amount int) error {
-	cli.Syncdata()
+
 	bc := Block.NewBlockchain(from)
 	defer bc.DB.Close()
 
@@ -66,6 +54,7 @@ func (cli *CLI) Send(from, to string, amount int) error {
 	return nil
 }
 
+//获取版本
 func (cli *CLI) GetVersion() int {
 
 	bc := Block.NewBlockchain("")
@@ -74,6 +63,7 @@ func (cli *CLI) GetVersion() int {
 	return bc.Version()
 }
 
+//获取用户列表
 func (cli *CLI) Users() []string {
 	bc := Block.NewBlockchain("")
 	defer bc.DB.Close()
@@ -81,18 +71,20 @@ func (cli *CLI) Users() []string {
 	return bc.Users()
 }
 
+//获取服务器列表
 func (cli *CLI) GetServerList() []Serverinfo {
 
 	return cli.Servers
 }
 
+//获取中心服务器地址
 func (cli *CLI) GetLocalHost() string {
 	return cli.Localhost
 }
 
 //获取区块链数据并ENcode
 func (cli *CLI) GetBlockChain() []byte {
-	cli.Syncdata()
+
 	blockchain := Block.NewBlockchain("")
 	blocks := blockchain.GetBlockAll()
 
@@ -109,7 +101,7 @@ func (cli *CLI) GetBlockChain() []byte {
 
 //同步数据到DB
 func (cli *CLI) SetBlockChain(d []byte) error {
-	cli.Syncdata()
+
 	var blocks []Block.BlockByte
 	blockchain := Block.NewBlockchain("")
 

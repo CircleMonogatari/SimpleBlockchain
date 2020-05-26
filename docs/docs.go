@@ -25,23 +25,6 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/BlockChain": {
-            "post": {
-                "description": "用于同步本地区块链数据",
-                "tags": [
-                    "服务端"
-                ],
-                "summary": "当前区块链数据",
-                "responses": {
-                    "200": {
-                        "description": "{\"statuc\":\"ok\", \"data\":\"bytesdata\"}",
-                        "schema": {
-                            "$ref": "#/definitions/gin.H"
-                        }
-                    }
-                }
-            }
-        },
         "/balance": {
             "get": {
                 "description": "返回指定用户的余额信息",
@@ -69,7 +52,7 @@ var doc = `{
             }
         },
         "/balancedetailed": {
-            "get": {
+            "post": {
                 "description": "返回指定地址的交易明细",
                 "tags": [
                     "前端"
@@ -87,6 +70,23 @@ var doc = `{
                 "responses": {
                     "200": {
                         "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/blockchain": {
+            "post": {
+                "description": "用于同步本地区块链数据",
+                "tags": [
+                    "服务端"
+                ],
+                "summary": "当前区块链数据",
+                "responses": {
+                    "200": {
+                        "description": "{\"statuc\":\"ok\", \"databyte\":\"bytesdata\"}",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -133,6 +133,32 @@ var doc = `{
                     },
                     "400": {
                         "description": "statuc\":\"error\", \"message\":\"失败原因\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/register": {
+            "get": {
+                "description": "注册当前服务器信息到中心服务器中",
+                "tags": [
+                    "服务端"
+                ],
+                "summary": "注册服务器到中心服务器中",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "5000",
+                        "name": "mode",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"statuc\":\"ok\"}",
                         "schema": {
                             "$ref": "#/definitions/gin.H"
                         }
@@ -236,7 +262,7 @@ var doc = `{
             }
         },
         "/users": {
-            "post": {
+            "get": {
                 "description": "获取所有区块链中的用户地址(在实际的区块链中该地址是保密的, 当前为demo演示接口)",
                 "tags": [
                     "Demo接口"

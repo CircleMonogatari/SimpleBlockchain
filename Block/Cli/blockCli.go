@@ -40,6 +40,7 @@ func (cli *CLI) Register(mode Servertype, address string) {
 }
 
 func (cli *CLI) Run() {
+
 	cli.validateArgs()
 
 	mode := flag.Int("mode", 0, "服务器类型: 1 中心服务器; 2 功能服务器; 3 节点服务器")

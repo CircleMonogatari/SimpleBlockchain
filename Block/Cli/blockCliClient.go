@@ -49,7 +49,7 @@ func (cli *CLI) Syncdata() {
 func (cli *CLI) GetServerBlockChain() []byte {
 	url := "http://" + cli.Localhost
 
-	resp, err := http.PostForm(url+"/BlockChain",
+	resp, err := http.PostForm(url+"/blockchain",
 		url2.Values{})
 	if err != nil {
 		log.Println(err)
