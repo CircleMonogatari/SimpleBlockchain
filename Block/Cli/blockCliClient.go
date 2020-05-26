@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	url2 "net/url"
 )
 
 //发送本机信息到中心服务器
@@ -33,13 +34,14 @@ func (cli *CLI) SendAddress() {
 //同步数据
 func (cli *CLI) Syncdata() {
 
-	if cli.GetServerVersion() != cli.GetVersion() {
+	if (cli.mode != 1) && (cli.GetServerVersion() != cli.GetVersion()) {
 		log.Printf("本机区块链版本低于集群版本, 正在同步")
 		blockdata := cli.GetServerBlockChain()
 		log.Printf("下载完毕! 共 %d 字节\n", len(blockdata))
 		cli.SetBlockChain(blockdata)
 		log.Println("同步完毕")
 	}
+
 	log.Println("版本一致")
 }
 
@@ -47,7 +49,8 @@ func (cli *CLI) Syncdata() {
 func (cli *CLI) GetServerBlockChain() []byte {
 	url := "http://" + cli.Localhost
 
-	resp, err := http.Get(url + "/BlockChain")
+	resp, err := http.PostForm(url+"/BlockChain",
+		url2.Values{})
 	if err != nil {
 		log.Println(err)
 	}
@@ -91,7 +94,7 @@ func (cli *CLI) GetServerVersion() int {
 	if err != nil {
 		log.Println(err)
 	}
-	return mapResult["version"].(int)
+	return int(mapResult["version"].(float64))
 }
 
 //

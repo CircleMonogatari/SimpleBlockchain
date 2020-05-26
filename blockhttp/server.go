@@ -33,8 +33,9 @@ func Runserver() {
 	r.GET("/users", Users) //用户列表
 
 	//前端
-	r.POST("/balancedetailed", BalanceDetailed) //余额明细
+
 	r.GET("/balance", Balance)                  //用户余额
+	r.POST("/balancedetailed", BalanceDetailed) //余额明细
 	r.POST("/transaction", Transaction)         //茶叶交易
 	r.POST("/entry", Entry)                     //数据录入
 	r.POST("/teadata", TeaData)                 //茶叶数据
@@ -43,7 +44,7 @@ func Runserver() {
 	r.GET("/registerinfo", RegisterInfo) //服务器列表
 	r.GET("/register", Register)         //注册服务器
 	r.GET("/version", Version)           //当前区块链版本
-	r.POST("/BlockChain", BlockChain)    //区块链数据
+	r.POST("/blockchain", BlockChain)    //区块链数据
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 

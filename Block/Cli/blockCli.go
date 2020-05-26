@@ -55,8 +55,10 @@ func (cli *CLI) Run() {
 	cli.Localhost = *localhost
 
 	//注册信息到中心服务器
-	cli.SendAddress()
-	cli.Syncdata()
+	if cli.mode != 1 {
+		cli.SendAddress()
+		cli.Syncdata()
+	}
 
 }
 
