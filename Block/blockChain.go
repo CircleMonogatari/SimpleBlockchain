@@ -339,6 +339,26 @@ func (bc *BlockChain) Traceability(address string) []Transaction {
 	return Transactions
 }
 
+//交易列表
+func (bc *BlockChain) TransactionList() []Transaction {
+	var Transactions []Transaction
+
+	it := bc.Iterator()
+	for {
+		block := it.Next()
+
+		for _, tx := range block.Transactions {
+			Transactions = append(Transactions, *tx)
+		}
+
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
+	}
+
+	return Transactions
+}
+
 //查询当前余额
 func (bc *BlockChain) Balance(address string) []TXOutput {
 	var txoutputs []TXOutput

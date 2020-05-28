@@ -20,10 +20,6 @@ import (
 func Runserver() {
 	r := gin.Default()
 	r.LoadHTMLGlob("web/*")
-	//a := docs.SwaggerInfo
-	//if a != nil {
-	//
-	//}
 
 	r.Use(Cors())
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -32,6 +28,7 @@ func Runserver() {
 
 	//Demo接口
 	r.GET("/users", Users) //用户列表
+	r.POST("/transactionlist", Transactionlist)
 
 	//前端
 	r.POST("/entry", Entry)                     //数据录入
@@ -50,6 +47,15 @@ func Runserver() {
 	r.Run() // listen and serve on 0.0.0.0:8080
 
 	fmt.Println("WEB END")
+}
+
+func Transactionlist(c *gin.Context) {
+
+	cli := Cli.GetInstance()
+
+	c.JSON(http.StatusOK, gin.H{
+		"data": cli.GetServerList(),
+	})
 }
 
 // @Summary 注册服务器到中心服务器中
@@ -157,6 +163,7 @@ func Entry(c *gin.Context) {
 // @Param from formData string true "Ivan"
 // @Param to formData string true "Ble"
 // @Param amount formData int true "300"
+// @Param data formData string false "{}"
 // @Success 200 {object} gin.H {"statuc":"ok"}
 // @Failure 400 {object} gin.H {"statuc":"error", "data":"失败原因"}
 // @Router /transaction [post]
@@ -164,18 +171,27 @@ func Transaction(c *gin.Context) {
 	cli := Cli.GetInstance()
 	from := c.PostForm("from")
 	to := c.PostForm("to")
+	data := c.PostForm("data")
 	amountstr := c.PostForm("amount")
 
 	amount, err := strconv.Atoi(amountstr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status": "error",
-			"data":   err,
+			"data":   err.Error(),
 		})
 		return
 	}
 
-	cli.Send(from, to, amount)
+	err = cli.Send(from, to, data, amount)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"data":   err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 	})
@@ -263,7 +279,7 @@ func Balance(c *gin.Context) {
 	balance := cli.GetBalance(address)
 
 	c.JSON(http.StatusBadRequest, gin.H{
-		"status": "error",
+		"status": "ok",
 		"data":   balance,
 	})
 }

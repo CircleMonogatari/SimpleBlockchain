@@ -41,12 +41,12 @@ func (cli *CLI) Entry(address, data string, amount int) error {
 }
 
 //交易
-func (cli *CLI) Send(from, to string, amount int) error {
+func (cli *CLI) Send(from, to, data string, amount int) error {
 
 	bc := Block.NewBlockchain(from)
 	defer bc.DB.Close()
 
-	tx, err := Block.NewUTXOTransaction(from, to, amount, bc)
+	tx, err := Block.NewUTXOTransaction(from, to, data, amount, bc)
 	if err != nil {
 		return err
 	}
@@ -72,7 +72,17 @@ func (cli *CLI) Users() []string {
 }
 
 //获取服务器列表
-func (cli *CLI) GetServerList() []Serverinfo {
+func (cli *CLI) GetServerList() []Block.Transaction {
+	bc := Block.NewBlockchain("")
+	defer bc.DB.Close()
+
+	return bc.TransactionList()
+}
+
+//获取服务器列表
+func (cli *CLI) GetTranList() []Serverinfo {
+	bc := Block.NewBlockchain("")
+	defer bc.DB.Close()
 
 	return cli.Servers
 }

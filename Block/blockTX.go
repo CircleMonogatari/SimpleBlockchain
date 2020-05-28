@@ -14,6 +14,7 @@ type Transaction struct {
 	ID   []byte     //ID
 	Vin  []TXInput  //输入
 	Vout []TXOutput //输出
+	data string
 }
 
 //交易输入
@@ -54,17 +55,17 @@ func NewCoinbaseTX(to, data string, subsidy int) *Transaction {
 		data = fmt.Sprintf("Reward to '%s'", to)
 	}
 
-	txin := TXInput{[]byte{}, -1, data}
+	txin := TXInput{[]byte{}, -1, genesisCoinbaseData}
 	txout := TXOutput{subsidy, to}
 
-	tx := Transaction{nil, []TXInput{txin}, []TXOutput{txout}}
+	tx := Transaction{nil, []TXInput{txin}, []TXOutput{txout}, data}
 	//tx.SetID()
 
 	return &tx
 }
 
 //货币交易
-func NewUTXOTransaction(from, to string, amount int, bc *BlockChain) (*Transaction, error) {
+func NewUTXOTransaction(from, to, data string, amount int, bc *BlockChain) (*Transaction, error) {
 	var inputs []TXInput
 	var outputs []TXOutput
 
@@ -93,7 +94,7 @@ func NewUTXOTransaction(from, to string, amount int, bc *BlockChain) (*Transacti
 		outputs = append(outputs, TXOutput{acc - amount, from})
 	}
 
-	tx := Transaction{nil, inputs, outputs}
+	tx := Transaction{nil, inputs, outputs, data}
 	tx.SetID()
 
 	return &tx, nil
