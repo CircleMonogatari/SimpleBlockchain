@@ -27,8 +27,8 @@ func Runserver() {
 	r.GET("/", Root)
 
 	//Demo接口
-	r.GET("/users", Users) //用户列表
-	r.POST("/transactionlist", Transactionlist)
+	r.GET("/users", Users)                     //用户列表
+	r.GET("/transactionlist", Transactionlist) //区块链数据
 
 	//前端
 	r.POST("/entry", Entry)                    //数据录入
@@ -49,6 +49,11 @@ func Runserver() {
 	fmt.Println("WEB END")
 }
 
+// @Summary 区块链数据
+// @Description 返回当前区块链里的所有交易数据
+// @Tags Demo
+// @Success 200 {object} gin.H "{"data":{}}"
+// @Router /transactionlist [get]
 func Transactionlist(c *gin.Context) {
 
 	cli := Cli.GetInstance()
