@@ -72,7 +72,7 @@ func NewUTXOTransaction(from, to, data string, amount int, bc *BlockChain) (*Tra
 	//找到符合条件的输出
 	acc, validOutputs := bc.FindSpendableOutputs(from, amount)
 	if acc < amount {
-		log.Println("Error: Not enough funds")
+		log.Println("Error: Not enough funds ", acc)
 		return nil, fmt.Errorf("余额不足")
 	}
 

@@ -11,6 +11,7 @@ import (
 const dbFile = "blockchain.db"
 const blocksBucket = "blocks"
 const genesisCoinbaseData = "genesis Coinbase Data"
+const genesisCoinbaseUser = "Ivan"
 
 type BlockChain struct {
 	tip []byte   //储存区块链的tip
@@ -18,7 +19,7 @@ type BlockChain struct {
 }
 
 //获取第一条链
-func NewBlockchain(address string) *BlockChain {
+func NewBlockchain(to string) *BlockChain {
 	var tip []byte
 	db, err := bolt.Open(dbFile, 0600, nil)
 	if err != nil {
@@ -31,7 +32,12 @@ func NewBlockchain(address string) *BlockChain {
 
 		//如果数据为空, 添加创世块
 		if b == nil {
-			cbtx := NewCoinbaseTX(address, genesisCoinbaseData, 20)
+			touser := to
+			if touser == "" {
+				touser = genesisCoinbaseUser
+			}
+
+			cbtx := NewCoinbaseTX(touser, "测试创世块交易", 20)
 			genesis := NewGenesisBlock(cbtx)
 			b, err := tx.CreateBucket([]byte(blocksBucket))
 			if err != nil {

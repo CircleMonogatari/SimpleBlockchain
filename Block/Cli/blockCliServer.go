@@ -46,6 +46,11 @@ func (cli *CLI) Send(from, to, data string, amount int) error {
 	bc := Block.NewBlockchain(from)
 	defer bc.DB.Close()
 
+	log.Println(from)
+	log.Println(to)
+	log.Println(data)
+	log.Println(amount)
+
 	tx, err := Block.NewUTXOTransaction(from, to, data, amount, bc)
 	if err != nil {
 		return err

@@ -257,7 +257,7 @@ func BalanceDetailed(c *gin.Context) {
 
 	cli := Cli.GetInstance()
 
-	c.JSON(http.StatusBadRequest, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 		"data":   cli.GetBalanceDetails(address),
 	})
@@ -278,7 +278,7 @@ func Balance(c *gin.Context) {
 	cli := Cli.GetInstance()
 	balance := cli.GetBalance(address)
 
-	c.JSON(http.StatusBadRequest, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"status": "ok",
 		"data":   balance,
 	})
