@@ -31,10 +31,10 @@ func Runserver() {
 	r.POST("/transactionlist", Transactionlist)
 
 	//前端
-	r.POST("/entry", Entry)                     //数据录入
-	r.GET("/balance", Balance)                  //用户余额
-	r.POST("/balancedetailed", BalanceDetailed) //余额明细
-	r.POST("/transaction", Transaction)         //茶叶交易
+	r.POST("/entry", Entry)                    //数据录入
+	r.GET("/balance", Balance)                 //用户余额
+	r.GET("/balancedetailed", BalanceDetailed) //余额明细
+	r.POST("/transaction", Transaction)        //茶叶交易
 
 	r.POST("/teadata", TeaData) //茶叶数据
 
@@ -247,7 +247,7 @@ func RegisterInfo(c *gin.Context) {
 // @Tags 前端
 // @Param address query string true "Ivan"
 // @Success 200 {object} gin.H
-// @Router /balancedetailed [post]
+// @Router /balancedetailed [get]
 func BalanceDetailed(c *gin.Context) {
 	address := c.DefaultQuery("address", "")
 	if address == "" {
@@ -273,6 +273,7 @@ func Balance(c *gin.Context) {
 	address := c.DefaultQuery("address", "")
 	if address == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
+		return
 	}
 
 	cli := Cli.GetInstance()

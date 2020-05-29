@@ -24,7 +24,7 @@ paths:
       tags:
       - 前端
   /balancedetailed:
-    post:
+    get:
       description: 返回指定地址的交易明细
       parameters:
       - description: Ivan
@@ -150,6 +150,10 @@ paths:
         name: amount
         required: true
         type: integer
+      - description: '{}'
+        in: formData
+        name: data
+        type: string
       responses:
         "200":
           description: statuc":"ok"}

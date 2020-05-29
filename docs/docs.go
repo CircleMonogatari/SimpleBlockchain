@@ -52,7 +52,7 @@ var doc = `{
             }
         },
         "/balancedetailed": {
-            "post": {
+            "get": {
                 "description": "返回指定地址的交易明细",
                 "tags": [
                     "前端"
@@ -243,6 +243,12 @@ var doc = `{
                         "name": "amount",
                         "in": "formData",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "{}",
+                        "name": "data",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
