@@ -14,7 +14,7 @@ type Transaction struct {
 	ID   []byte     //ID
 	Vin  []TXInput  //输入
 	Vout []TXOutput //输出
-	data string
+	Data string     //交易数据
 }
 
 //交易输入
