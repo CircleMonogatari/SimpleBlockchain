@@ -42,7 +42,7 @@ func Test_BlockData_Transactions(t *testing.T) {
 		ID:   []byte("12345"),
 		Vin:  []TXInput{},
 		Vout: []TXOutput{},
-		data: "ceshishuju",
+		Data: "ceshishuju",
 	}
 
 	fmt.Println(gin.H{"data": tx})
