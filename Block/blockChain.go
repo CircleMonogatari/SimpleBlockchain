@@ -422,7 +422,7 @@ func (bc *BlockChain) Balance(address string) []TXOutput {
 //	return TxTmp
 //}
 
-func (bc *BlockChain) FindTransaction(txid []byte) (Transaction, error) {
+func (bc *BlockChain) FindTransaction(txid []byte) (*Transaction, error) {
 	bci := bc.Iterator()
 
 	for {
@@ -433,15 +433,35 @@ func (bc *BlockChain) FindTransaction(txid []byte) (Transaction, error) {
 			//获取交易ID
 
 			if bytes.Compare(tx.ID, txid) == 0 {
-				return *tx, nil
-			}
-
-			//跳出循环
-			if len(block.PrevBlockHash) == 0 {
-				break
+				return tx, nil
 			}
 		}
-
+		//跳出循环
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
 	}
-	return Transaction{}, fmt.Errorf("未找到交易")
+	return nil, fmt.Errorf("未找到交易")
+}
+
+func (bc *BlockChain) FindTransactionList(txid []byte) ([]Transaction, error) {
+
+	var transactionlist []Transaction
+
+	tx, err := bc.FindTransaction(txid)
+	if err != nil {
+		return nil, err
+	}
+	transactionlist = append(transactionlist, *tx)
+
+	for {
+
+		tx, err = bc.FindTransaction(tx.Vin[0].Txid)
+		if err != nil {
+			break
+		}
+		transactionlist = append(transactionlist, *tx)
+	}
+
+	return transactionlist, nil
 }

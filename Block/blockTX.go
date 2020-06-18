@@ -32,7 +32,7 @@ type TXOutput struct {
 
 //检查交易是否为 coinbase
 func (tx Transaction) IsCoinbase() bool {
-	return len(tx.Vin) == 1 && len(tx.Vin[0].Txid) == 0 && tx.Vin[0].Vout == -1
+	return len(tx.Vin) == 1 && tx.Vin[0].Vout == -1
 }
 
 //把交易结构数据打包成hash填入ID
@@ -59,6 +59,7 @@ func NewCoinbaseTX(to, data string, subsidy int) *Transaction {
 	txout := TXOutput{subsidy, to}
 
 	tx := Transaction{nil, []TXInput{txin}, []TXOutput{txout}, data}
+	tx.SetID()
 	//tx.SetID()
 
 	return &tx

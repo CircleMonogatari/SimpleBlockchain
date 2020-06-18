@@ -8,5 +8,4 @@ EXPOSE 8080
 RUN git clone https://github.com/CircleMonogatari/SimpleBlockchain.git \
     && cd SimpleBlockchain  \
     && go build \
-    && nohub ./SimpleBlockchain -mode 1 &
-
+    && nohub ./SimpleBlockchain -mode 1

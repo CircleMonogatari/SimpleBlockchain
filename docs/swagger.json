@@ -247,6 +247,23 @@
                 }
             }
         },
+        "/transactionlist": {
+            "get": {
+                "description": "返回当前区块链里的所有交易数据",
+                "tags": [
+                    "Demo"
+                ],
+                "summary": "区块链数据",
+                "responses": {
+                    "200": {
+                        "description": "{\"data\":{}}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/users": {
             "get": {
                 "description": "获取所有区块链中的用户地址(在实际的区块链中该地址是保密的, 当前为demo演示接口)",

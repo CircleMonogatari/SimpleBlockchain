@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/CircleMonogatari/SimpleBlockchain/Block/Cli"
-	"github.com/CircleMonogatari/SimpleBlockchain/blockhttp"
+	"github.com/CircleMonogatari/SimpleBlockchain/Blockhttp"
+	"github.com/CircleMonogatari/SimpleBlockchain/Cli"
 )
 
 func main() {
@@ -13,5 +13,5 @@ func main() {
 	cli := Cli.GetInstance()
 	cli.Run()
 	//启动服务器
-	blockhttp.Runserver()
+	Blockhttp.Runserver()
 }

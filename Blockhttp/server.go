@@ -1,11 +1,11 @@
-package blockhttp
+package Blockhttp
 
 import (
 	"bytes"
 	"encoding/gob"
 	"encoding/hex"
 	"fmt"
-	"github.com/CircleMonogatari/SimpleBlockchain/Block/Cli"
+	"github.com/CircleMonogatari/SimpleBlockchain/Cli"
 	_ "github.com/CircleMonogatari/SimpleBlockchain/docs"
 	"log"
 	"net/http"
@@ -25,6 +25,8 @@ func Runserver() {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/", Root)
+
+	//license
 
 	//Demo接口
 	r.GET("/users", Users)                     //用户列表
@@ -59,7 +61,7 @@ func Transactionlist(c *gin.Context) {
 	cli := Cli.GetInstance()
 
 	c.JSON(http.StatusOK, gin.H{
-		"data": cli.GetServerList(),
+		"data": cli.GetTranList(),
 	})
 }
 

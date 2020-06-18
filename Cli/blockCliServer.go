@@ -12,8 +12,6 @@ func (cli *CLI) GetBalanceDetails(address string) []Block.Transaction {
 	bc := Block.NewBlockchain(address)
 	defer bc.DB.Close()
 
-	//UTXOs := bc.FindUTXO(address)
-
 	return bc.Traceability(address)
 }
 
@@ -76,8 +74,8 @@ func (cli *CLI) Users() []string {
 	return bc.Users()
 }
 
-//获取服务器列表
-func (cli *CLI) GetServerList() []Block.Transaction {
+//获取交易列表
+func (cli *CLI) GetTranList() []Block.Transaction {
 	bc := Block.NewBlockchain("")
 	defer bc.DB.Close()
 
@@ -85,7 +83,7 @@ func (cli *CLI) GetServerList() []Block.Transaction {
 }
 
 //获取服务器列表
-func (cli *CLI) GetTranList() []Serverinfo {
+func (cli *CLI) GetServerList() []Serverinfo {
 	bc := Block.NewBlockchain("")
 	defer bc.DB.Close()
 
@@ -131,4 +129,37 @@ func (cli *CLI) SetBlockChain(d []byte) error {
 	}
 	blockchain.SetBlockAll(blocks)
 	return nil
+}
+
+//获取所有的基础数据
+func (cli *CLI) GetNodeAll(address string) []Block.Transaction {
+	bc := Block.NewBlockchain("")
+	defer bc.DB.Close()
+
+	var Transactions []Block.Transaction
+
+	tl := bc.TransactionList()
+
+	for _, tx := range tl {
+
+		if tx.IsCoinbase() {
+			if address == tx.Vout[0].ScriptPubKey {
+				Transactions = append(Transactions, tx)
+			}
+		}
+	}
+	return Transactions
+}
+
+//数据链
+func (cli *CLI) GetNodeList(txid string) []Block.Transaction {
+	bc := Block.NewBlockchain("")
+	defer bc.DB.Close()
+
+	ts, err := bc.FindTransactionList([]byte(txid))
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	return ts
 }

@@ -1,8 +1,8 @@
-package blockhttp
+package Blockhttp
 
 import (
 	"encoding/json"
-	"github.com/CircleMonogatari/SimpleBlockchain/Block/Cli"
+	"github.com/CircleMonogatari/SimpleBlockchain/Cli"
 	"io/ioutil"
 	"net/http"
 	"testing"
