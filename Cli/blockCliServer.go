@@ -2,6 +2,7 @@ package Cli
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/gob"
 	"github.com/CircleMonogatari/SimpleBlockchain/Block"
 	"log"
@@ -48,6 +49,20 @@ func (cli *CLI) Send(from, to, data string, amount int) error {
 	log.Println(to)
 	log.Println(data)
 	log.Println(amount)
+
+	tx, err := Block.NewUTXOTransaction(from, to, data, amount, bc)
+	if err != nil {
+		return err
+	}
+	bc.MineBlock([]*Block.Transaction{tx})
+	return nil
+}
+
+//交易
+func (cli *CLI) SendTxid(from, to, data, txid string) error {
+
+	bc := Block.NewBlockchain(from)
+	defer bc.DB.Close()
 
 	tx, err := Block.NewUTXOTransaction(from, to, data, amount, bc)
 	if err != nil {
@@ -156,7 +171,13 @@ func (cli *CLI) GetNodeList(txid string) []Block.Transaction {
 	bc := Block.NewBlockchain("")
 	defer bc.DB.Close()
 
-	ts, err := bc.FindTransactionList([]byte(txid))
+	b, err := base64.StdEncoding.DecodeString(txid)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+
+	ts, err := bc.FindTransactionList(b)
 	if err != nil {
 		log.Println(err)
 		return nil

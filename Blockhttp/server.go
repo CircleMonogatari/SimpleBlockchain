@@ -19,7 +19,6 @@ import (
 
 func Runserver() {
 	r := gin.Default()
-	r.LoadHTMLGlob("web/*")
 
 	r.Use(Cors())
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -46,9 +45,20 @@ func Runserver() {
 	r.GET("/version", Version)           //当前区块链版本
 	r.POST("/blockchain", BlockChain)    //区块链数据
 
+	r.GET("/test", DemoData)
+
 	r.Run() // listen and serve on 0.0.0.0:8080
 
 	fmt.Println("WEB END")
+}
+
+func DemoData(context *gin.Context) {
+	a := "qwert"
+
+	context.JSON(http.StatusOK, gin.H{
+		"a": a,
+		"b": []byte(a),
+	})
 }
 
 // @Summary 区块链数据

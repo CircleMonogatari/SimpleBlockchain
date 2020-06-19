@@ -29,7 +29,9 @@ func TestCLI_GetTranList(t *testing.T) {
 
 func TestCLI_GetNodeList(t *testing.T) {
 	cli := GetInstance()
-	ts := cli.GetNodeList("EEMUALiPqx/zHjgInJgxt0Jb9XIO4S2CnoPAfia7SXY=")
 
-	fmt.Println(ts)
+	cli.Entry("sfr", "ceshi", 1)
+	cli.Send()
+
+	fmt.Println(cli.GetNodeList("yCdYvsRigPo5rE5+OKCzjJhwMoHp3W4+6cy4fek3v58="))
 }

@@ -444,8 +444,33 @@ func (bc *BlockChain) FindTransaction(txid []byte) (*Transaction, error) {
 	return nil, fmt.Errorf("未找到交易")
 }
 
+//寻找交易是否被引用
+func (bc *BlockChain) FindTransactionNext(txid []byte) (*Transaction, error) {
+	bci := bc.Iterator()
+
+	for {
+		block := bci.Next()
+
+		//遍历交易
+		for _, tx := range block.Transactions {
+			for _, in := range tx.Vin {
+
+				if bytes.Compare(in.Txid, txid) == 0 {
+					return tx, nil
+				}
+			}
+		}
+		//跳出循环
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
+	}
+	return nil, fmt.Errorf("未找到交易")
+}
+
 func (bc *BlockChain) FindTransactionList(txid []byte) ([]Transaction, error) {
 
+	var transactionlistNext []Transaction
 	var transactionlist []Transaction
 
 	tx, err := bc.FindTransaction(txid)
@@ -454,14 +479,25 @@ func (bc *BlockChain) FindTransactionList(txid []byte) ([]Transaction, error) {
 	}
 	transactionlist = append(transactionlist, *tx)
 
+	//往前找
 	for {
-
 		tx, err = bc.FindTransaction(tx.Vin[0].Txid)
 		if err != nil {
 			break
 		}
 		transactionlist = append(transactionlist, *tx)
 	}
+
+	//往后找
+	for {
+		tx, err = bc.FindTransactionNext(txid)
+		if err != nil {
+			break
+		}
+		transactionlistNext = append(transactionlistNext, *tx)
+	}
+
+	transactionlist = append(transactionlistNext, transactionlist...)
 
 	return transactionlist, nil
 }

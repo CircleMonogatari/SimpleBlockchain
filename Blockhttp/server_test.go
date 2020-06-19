@@ -47,3 +47,11 @@ func Test_findByPk(t *testing.T) {
 	//fmt.Println(hahaha)
 	//fmt.Println("End")
 }
+
+func Test_listIns(t *testing.T) {
+	a := []int{1, 2, 3, 4, 5}
+	b := []int{6, 7, 8, 9, 0}
+
+	b = append(a, b...)
+	fmt.Println(b)
+}
