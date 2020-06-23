@@ -1,6 +1,7 @@
 package Cli
 
 import (
+	"encoding/base64"
 	"fmt"
 	"testing"
 )
@@ -30,8 +31,31 @@ func TestCLI_GetTranList(t *testing.T) {
 func TestCLI_GetNodeList(t *testing.T) {
 	cli := GetInstance()
 
+	//生成交易
 	cli.Entry("sfr", "ceshi", 1)
-	cli.Send()
 
-	fmt.Println(cli.GetNodeList("yCdYvsRigPo5rE5+OKCzjJhwMoHp3W4+6cy4fek3v58="))
+	//获取数据
+	txs := cli.GetNodeAll("sfr")
+	if txs == nil {
+		t.Fatal("GetNodeAll error")
+	}
+
+	txId := txs[0].ID
+
+	id := base64.StdEncoding.EncodeToString(txId)
+
+	//发起交易
+	err := cli.SendTxid("sfr", "cs", "申请回报", id)
+	if err != nil {
+		t.Fatal("SendTxid error")
+	}
+
+	//交易溯源
+	fmt.Println(cli.GetNodeList("sfr"))
 }
+
+//
+//func TestCLI_GetNodeList2(t *testing.T) {
+//	cli := GetInstance()
+//	cli.GetNodeList()
+//}

@@ -120,6 +120,141 @@
                 }
             }
         },
+        "/license/entry": {
+            "post": {
+                "description": "申请表单创建后, 生成第一个交易数据, 并返回该表单的ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "license"
+                ],
+                "summary": "申请表单",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "{json}",
+                        "name": "data",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "sfr",
+                        "name": "address",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "statuc\":\"ok\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "statuc\":\"error\",\"msg\":\"失败原因\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/license/node": {
+            "get": {
+                "description": "获取指定用户创建的申请表单",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "license"
+                ],
+                "summary": "获取申请的表单",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "sfr",
+                        "name": "address",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "statuc\":\"ok\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "statuc\":\"error\",\"msg\":\"失败原因\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/license/send": {
+            "post": {
+                "description": "把指定证书交易给指定对象",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "license"
+                ],
+                "summary": "证书交易",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "{json}",
+                        "name": "data",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "sfr",
+                        "name": "address",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "cs",
+                        "name": "to",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "AESBFS34543534fdgdf==",
+                        "name": "txid",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "statuc\":\"ok\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "statuc\":\"error\",\"msg\":\"失败原因\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/register": {
             "get": {
                 "description": "注册当前服务器信息到中心服务器中",

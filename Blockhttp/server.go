@@ -45,11 +45,118 @@ func Runserver() {
 	r.GET("/version", Version)           //当前区块链版本
 	r.POST("/blockchain", BlockChain)    //区块链数据
 
+	//license
+	l := r.Group("/license")
+	{
+		l.POST("/entry", licenseEntry)
+		l.POST("/send", licenseSend)
+		l.GET("/node", licenseNode)
+		l.GET("/nodelist", licenseNodeList)
+	}
+
 	r.GET("/test", DemoData)
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 
 	fmt.Println("WEB END")
+}
+
+//@Summary 申请表单
+//@Description 申请表单创建后, 生成第一个交易数据, 并返回该表单的ID
+//@Tags license
+//@accept json
+//@Produce  json
+//@Param data formData string false "{json}"
+//@Param name formData string false "name"
+//@Success 200 {object} gin.H {"statuc":"ok"}
+//@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
+//@Router /license/entry [post]
+func licenseNodeList(c *gin.Context) {
+
+}
+
+//@Summary 获取申请的表单
+//@Description 获取指定用户创建的申请表单
+//@Tags license
+//@accept json
+//@Produce  json
+//@Param address formData string false "sfr"
+//@Success 200 {object} gin.H {"statuc":"ok"}
+//@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
+//@Router /license/node [get]
+func licenseNode(c *gin.Context) {
+	address := c.DefaultQuery("address", "")
+	if address == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
+		return
+	}
+
+	cli := Cli.GetInstance()
+	tx := cli.GetNodeAll(address)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"data":   tx,
+	})
+}
+
+//@Summary 证书交易
+//@Description 把指定证书交易给指定对象
+//@Tags license
+//@accept json
+//@Produce  json
+//@Param data formData string false "{json}"
+//@Param address formData string false "sfr"
+//@Param to formData string false "cs"
+//@Param txid formData string false "AESBFS34543534fdgdf=="
+//@Success 200 {object} gin.H {"statuc":"ok"}
+//@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
+//@Router /license/send [post]
+func licenseSend(c *gin.Context) {
+	cli := Cli.GetInstance()
+	address := c.PostForm("address")
+	to := c.PostForm("to")
+	txid := c.PostForm("txid")
+	data := c.PostForm("data")
+
+	err := cli.SendTxid(address, to, data, txid)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"msg":    err,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+	})
+}
+
+//@Summary 申请表单
+//@Description 申请表单创建后, 生成第一个交易数据, 并返回该表单的ID
+//@Tags license
+//@accept json
+//@Produce  json
+//@Param data formData string false "{json}"
+//@Param address formData string false "sfr"
+//@Success 200 {object} gin.H {"statuc":"ok"}
+//@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
+//@Router /license/entry [post]
+func licenseEntry(c *gin.Context) {
+	cli := Cli.GetInstance()
+	address := c.PostForm("address")
+	data := c.PostForm("data")
+
+	err := cli.Entry(address, data, 1)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"msg":    err,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+	})
 }
 
 func DemoData(context *gin.Context) {

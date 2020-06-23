@@ -58,13 +58,15 @@ func (cli *CLI) Send(from, to, data string, amount int) error {
 	return nil
 }
 
-//交易
+//指定交易ID 来交易
 func (cli *CLI) SendTxid(from, to, data, txid string) error {
 
 	bc := Block.NewBlockchain(from)
 	defer bc.DB.Close()
 
-	tx, err := Block.NewUTXOTransaction(from, to, data, amount, bc)
+	txId, err := base64.StdEncoding.DecodeString(txid)
+
+	tx, err := Block.NewUTxIdTransaction(from, to, data, txId, bc)
 	if err != nil {
 		return err
 	}

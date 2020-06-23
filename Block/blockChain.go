@@ -312,6 +312,38 @@ Work:
 	return accumulated, unspentOutputs
 }
 
+//查找交易中  UTXO
+func (bc *BlockChain) FindIsSpendableOutputs(txid []byte, pos int) bool {
+
+	bci := bc.Iterator()
+	for {
+		block := bci.Next()
+
+		//遍历交易
+		for _, tx := range block.Transactions {
+
+			if bytes.Compare(tx.Vin[0].Txid, txid) != 0 {
+				continue
+			}
+
+			//一般只要引用了该交易,那么基本上会使用
+			if tx.Vin[0].Vout == 0 {
+				return false
+			}
+			//不需要验证Vout也能确认该交易被使用了
+
+			return false
+
+		}
+		//跳出循环
+		if len(block.PrevBlockHash) == 0 {
+			break
+		}
+	}
+
+	return true
+}
+
 //交易溯源
 func (bc *BlockChain) Traceability(address string) []Transaction {
 	var Transactions []Transaction

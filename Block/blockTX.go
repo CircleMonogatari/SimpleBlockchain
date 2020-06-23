@@ -101,34 +101,19 @@ func NewUTXOTransaction(from, to, data string, amount int, bc *BlockChain) (*Tra
 	return &tx, nil
 }
 
-func NewUTxIdTransaction(from, to, data, txid string, bc *BlockChain) (*Transaction, error) {
+//通过Txid指定交易
+func NewUTxIdTransaction(from, to, data string, txid []byte, bc *BlockChain) (*Transaction, error) {
 	var inputs []TXInput
 	var outputs []TXOutput
 
-	//找到符合条件的输出
-	acc, validOutputs := bc.FindSpendableOutputs(from)
-	if acc < amount {
-		log.Println("Error: Not enough funds ", acc)
-		return nil, fmt.Errorf("余额不足")
+	//查找交易是否被使用
+	if bc.FindIsSpendableOutputs(txid, 0) != true {
+		return nil, fmt.Errorf("该交易已经被使用")
 	}
 
-	for txid, outs := range validOutputs {
-		txID, err := hex.DecodeString(txid)
-		if err != nil {
-			log.Panic(err)
-		}
-
-		for _, out := range outs {
-			input := TXInput{txID, out, from}
-			inputs = append(inputs, input)
-		}
-	}
-
-	outputs = append(outputs, TXOutput{amount, to})
-
-	if acc > amount {
-		outputs = append(outputs, TXOutput{acc - amount, from})
-	}
+	input := TXInput{txid, 0, from}
+	inputs = append(inputs, input)
+	outputs = append(outputs, TXOutput{1, to})
 
 	tx := Transaction{nil, inputs, outputs, data}
 	tx.SetID()
