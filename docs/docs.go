@@ -143,12 +143,6 @@ var doc = `{
         "/license/entry": {
             "post": {
                 "description": "申请表单创建后, 生成第一个交易数据, 并返回该表单的ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "license"
                 ],
@@ -162,9 +156,10 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "sfr",
+                        "description": "Ivan",
                         "name": "address",
-                        "in": "formData"
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -186,12 +181,6 @@ var doc = `{
         "/license/node": {
             "get": {
                 "description": "获取指定用户创建的申请表单",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "license"
                 ],
@@ -223,12 +212,6 @@ var doc = `{
         "/license/nodelist": {
             "get": {
                 "description": "获取证书所有数据",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "license"
                 ],
@@ -260,12 +243,6 @@ var doc = `{
         "/license/send": {
             "post": {
                 "description": "把指定证书交易给指定对象",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
                 "tags": [
                     "license"
                 ],

@@ -64,8 +64,6 @@ func Runserver() {
 //@Summary 申请证书表单数据
 //@Description 获取证书所有数据
 //@Tags license
-//@accept json
-//@Produce  json
 //@Param txid query string false "FxjaxE4MlGgnMuuiPmo6lDko00q1Hzcg1Bip+Nf8iQs="
 //@Success 200 {object} gin.H {"statuc":"ok"}
 //@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
@@ -89,8 +87,6 @@ func licenseNodeList(c *gin.Context) {
 //@Summary 获取申请的表单
 //@Description 获取指定用户创建的申请表单
 //@Tags license
-//@accept json
-//@Produce  json
 //@Param address query string false "sfr"
 //@Success 200 {object} gin.H {"statuc":"ok"}
 //@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
@@ -113,8 +109,6 @@ func licenseNode(c *gin.Context) {
 //@Summary 证书交易
 //@Description 把指定证书交易给指定对象
 //@Tags license
-//@accept json
-//@Produce  json
 //@Param data formData string false "{json}"
 //@Param address formData string false "sfr"
 //@Param to formData string false "cs"
@@ -146,10 +140,8 @@ func licenseSend(c *gin.Context) {
 //@Summary 申请表单
 //@Description 申请表单创建后, 生成第一个交易数据, 并返回该表单的ID
 //@Tags license
-//@accept json
-//@Produce  json
 //@Param data formData string false "{json}"
-//@Param address formData string false "sfr"
+//@Param address formData string true "Ivan"
 //@Success 200 {object} gin.H {"statuc":"ok"}
 //@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
 //@Router /license/entry [post]

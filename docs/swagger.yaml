@@ -84,20 +84,17 @@ paths:
       - 前端
   /license/entry:
     post:
-      consumes:
-      - application/json
       description: 申请表单创建后, 生成第一个交易数据, 并返回该表单的ID
       parameters:
       - description: '{json}'
         in: formData
         name: data
         type: string
-      - description: sfr
+      - description: Ivan
         in: formData
         name: address
+        required: true
         type: string
-      produces:
-      - application/json
       responses:
         "200":
           description: statuc":"ok"}
@@ -112,16 +109,12 @@ paths:
       - license
   /license/node:
     get:
-      consumes:
-      - application/json
       description: 获取指定用户创建的申请表单
       parameters:
       - description: sfr
         in: query
         name: address
         type: string
-      produces:
-      - application/json
       responses:
         "200":
           description: statuc":"ok"}
@@ -136,16 +129,12 @@ paths:
       - license
   /license/nodelist:
     get:
-      consumes:
-      - application/json
       description: 获取证书所有数据
       parameters:
       - description: FxjaxE4MlGgnMuuiPmo6lDko00q1Hzcg1Bip+Nf8iQs=
         in: query
         name: txid
         type: string
-      produces:
-      - application/json
       responses:
         "200":
           description: statuc":"ok"}
@@ -160,8 +149,6 @@ paths:
       - license
   /license/send:
     post:
-      consumes:
-      - application/json
       description: 把指定证书交易给指定对象
       parameters:
       - description: '{json}'
@@ -180,8 +167,6 @@ paths:
         in: formData
         name: txid
         type: string
-      produces:
-      - application/json
       responses:
         "200":
           description: statuc":"ok"}
