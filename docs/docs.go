@@ -201,7 +201,44 @@ var doc = `{
                         "type": "string",
                         "description": "sfr",
                         "name": "address",
-                        "in": "formData"
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "statuc\":\"ok\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "400": {
+                        "description": "statuc\":\"error\",\"msg\":\"失败原因\"}",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
+        "/license/nodelist": {
+            "get": {
+                "description": "申请表单创建后, 生成第一个交易数据, 并返回该表单的ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "license"
+                ],
+                "summary": "申请表单",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "FxjaxE4MlGgnMuuiPmo6lDko00q1Hzcg1Bip+Nf8iQs=",
+                        "name": "txid",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -254,7 +291,7 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "AESBFS34543534fdgdf==",
+                        "description": "FxjaxE4MlGgnMuuiPmo6lDko00q1Hzcg1Bip+Nf8iQs=",
                         "name": "txid",
                         "in": "formData"
                     }
@@ -423,7 +460,7 @@ var doc = `{
             "get": {
                 "description": "获取所有区块链中的用户地址(在实际的区块链中该地址是保密的, 当前为demo演示接口)",
                 "tags": [
-                    "Demo接口"
+                    "Demo"
                 ],
                 "summary": "用户数据",
                 "responses": {

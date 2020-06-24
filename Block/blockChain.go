@@ -520,12 +520,14 @@ func (bc *BlockChain) FindTransactionList(txid []byte) ([]Transaction, error) {
 		transactionlist = append(transactionlist, *tx)
 	}
 
+	tmpid := txid
 	//往后找
 	for {
-		tx, err = bc.FindTransactionNext(txid)
+		tx, err = bc.FindTransactionNext(tmpid)
 		if err != nil {
 			break
 		}
+		tmpid = tx.ID
 		transactionlistNext = append(transactionlistNext, *tx)
 	}
 

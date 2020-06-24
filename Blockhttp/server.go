@@ -66,12 +66,23 @@ func Runserver() {
 //@Tags license
 //@accept json
 //@Produce  json
-//@Param data formData string false "{json}"
-//@Param name formData string false "name"
+//@Param txid query string false "FxjaxE4MlGgnMuuiPmo6lDko00q1Hzcg1Bip+Nf8iQs="
 //@Success 200 {object} gin.H {"statuc":"ok"}
 //@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
-//@Router /license/entry [post]
+//@Router /license/nodelist [get]
 func licenseNodeList(c *gin.Context) {
+	txid := c.DefaultQuery("txid", "")
+	if txid == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error"})
+		return
+	}
+
+	cli := Cli.GetInstance()
+	txs := cli.GetNodeList(txid)
+	c.JSON(http.StatusOK, gin.H{
+		"status": "ok",
+		"data":   txs,
+	})
 
 }
 
@@ -80,7 +91,7 @@ func licenseNodeList(c *gin.Context) {
 //@Tags license
 //@accept json
 //@Produce  json
-//@Param address formData string false "sfr"
+//@Param address query string false "sfr"
 //@Success 200 {object} gin.H {"statuc":"ok"}
 //@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
 //@Router /license/node [get]
@@ -107,7 +118,7 @@ func licenseNode(c *gin.Context) {
 //@Param data formData string false "{json}"
 //@Param address formData string false "sfr"
 //@Param to formData string false "cs"
-//@Param txid formData string false "AESBFS34543534fdgdf=="
+//@Param txid formData string false "FxjaxE4MlGgnMuuiPmo6lDko00q1Hzcg1Bip+Nf8iQs="
 //@Success 200 {object} gin.H {"statuc":"ok"}
 //@Failure 400 {object} gin.H {"statuc":"error","msg":"失败原因"}
 //@Router /license/send [post]
@@ -124,6 +135,7 @@ func licenseSend(c *gin.Context) {
 			"status": "error",
 			"msg":    err,
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -152,6 +164,7 @@ func licenseEntry(c *gin.Context) {
 			"status": "error",
 			"msg":    err,
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -223,7 +236,7 @@ func Register(c *gin.Context) {
 
 // @Summary 用户数据
 // @Description 获取所有区块链中的用户地址(在实际的区块链中该地址是保密的, 当前为demo演示接口)
-// @Tags Demo接口
+// @Tags Demo
 // @Success 200 {object} gin.H "{"data":["sadhaj","Pedro","Ivan"],"statuc":"ok"}"
 // @Router /users [get]
 func Users(context *gin.Context) {

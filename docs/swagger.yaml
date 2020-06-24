@@ -117,7 +117,7 @@ paths:
       description: 获取指定用户创建的申请表单
       parameters:
       - description: sfr
-        in: formData
+        in: query
         name: address
         type: string
       produces:
@@ -132,6 +132,30 @@ paths:
           schema:
             $ref: '#/definitions/gin.H'
       summary: 获取申请的表单
+      tags:
+      - license
+  /license/nodelist:
+    get:
+      consumes:
+      - application/json
+      description: 申请表单创建后, 生成第一个交易数据, 并返回该表单的ID
+      parameters:
+      - description: FxjaxE4MlGgnMuuiPmo6lDko00q1Hzcg1Bip+Nf8iQs=
+        in: query
+        name: txid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: statuc":"ok"}
+          schema:
+            $ref: '#/definitions/gin.H'
+        "400":
+          description: statuc":"error","msg":"失败原因"}
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: 申请表单
       tags:
       - license
   /license/send:
@@ -152,7 +176,7 @@ paths:
         in: formData
         name: to
         type: string
-      - description: AESBFS34543534fdgdf==
+      - description: FxjaxE4MlGgnMuuiPmo6lDko00q1Hzcg1Bip+Nf8iQs=
         in: formData
         name: txid
         type: string
@@ -275,7 +299,7 @@ paths:
             $ref: '#/definitions/gin.H'
       summary: 用户数据
       tags:
-      - Demo接口
+      - Demo
   /version:
     get:
       description: 返回当前区块链长度
