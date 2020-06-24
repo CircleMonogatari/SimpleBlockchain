@@ -222,7 +222,7 @@ var doc = `{
         },
         "/license/nodelist": {
             "get": {
-                "description": "申请表单创建后, 生成第一个交易数据, 并返回该表单的ID",
+                "description": "获取证书所有数据",
                 "consumes": [
                     "application/json"
                 ],
@@ -232,7 +232,7 @@ var doc = `{
                 "tags": [
                     "license"
                 ],
-                "summary": "申请表单",
+                "summary": "申请证书表单数据",
                 "parameters": [
                     {
                         "type": "string",

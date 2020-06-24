@@ -61,8 +61,8 @@ func Runserver() {
 	fmt.Println("WEB END")
 }
 
-//@Summary 申请表单
-//@Description 申请表单创建后, 生成第一个交易数据, 并返回该表单的ID
+//@Summary 申请证书表单数据
+//@Description 获取证书所有数据
 //@Tags license
 //@accept json
 //@Produce  json

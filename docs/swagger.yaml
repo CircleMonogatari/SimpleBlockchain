@@ -138,7 +138,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 申请表单创建后, 生成第一个交易数据, 并返回该表单的ID
+      description: 获取证书所有数据
       parameters:
       - description: FxjaxE4MlGgnMuuiPmo6lDko00q1Hzcg1Bip+Nf8iQs=
         in: query
@@ -155,7 +155,7 @@ paths:
           description: statuc":"error","msg":"失败原因"}
           schema:
             $ref: '#/definitions/gin.H'
-      summary: 申请表单
+      summary: 申请证书表单数据
       tags:
       - license
   /license/send:
