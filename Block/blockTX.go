@@ -106,6 +106,9 @@ func NewUTxIdTransaction(from, to, data string, txid []byte, bc *BlockChain) (*T
 	var inputs []TXInput
 	var outputs []TXOutput
 
+	////查找指定txid交易
+	//if bc.find
+
 	//查找交易是否被使用
 	if bc.FindIsSpendableOutputs(txid, 0) != true {
 		return nil, fmt.Errorf("该交易已经被使用")
