@@ -502,7 +502,6 @@ func (bc *BlockChain) FindTransactionNext(txid []byte) (*Transaction, error) {
 
 func (bc *BlockChain) FindTransactionList(txid []byte) ([]Transaction, error) {
 
-	var transactionlistNext []Transaction
 	var transactionlist []Transaction
 
 	tx, err := bc.FindTransaction(txid)
@@ -528,10 +527,8 @@ func (bc *BlockChain) FindTransactionList(txid []byte) ([]Transaction, error) {
 			break
 		}
 		tmpid = tx.ID
-		transactionlistNext = append(transactionlistNext, *tx)
+		transactionlist = append([]Transaction{*tx}, transactionlist...)
 	}
-
-	transactionlist = append(transactionlistNext, transactionlist...)
 
 	return transactionlist, nil
 }
