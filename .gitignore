@@ -22,3 +22,6 @@ _testmain.go
 *.exe
 *.yaml
 .idea/
+
+
+!docker-compose.yaml
