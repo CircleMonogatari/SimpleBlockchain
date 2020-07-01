@@ -5,14 +5,13 @@ import (
 	"encoding/gob"
 	"encoding/hex"
 	"fmt"
-	"github.com/CircleMonogatari/SimpleBlockchain/Cli"
-	_ "github.com/CircleMonogatari/SimpleBlockchain/docs"
 	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/CircleMonogatari/SimpleBlockchain/Cli"
+	_ "github.com/CircleMonogatari/SimpleBlockchain/docs"
 	"github.com/gin-gonic/gin"
-
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -56,7 +55,7 @@ func Runserver() {
 
 	r.GET("/test", DemoData)
 
-	r.Run() // listen and serve on 0.0.0.0:8080
+	r.Run("0.0.0.0:8081") // listen and serve on 0.0.0.0:8080
 
 	fmt.Println("WEB END")
 }
